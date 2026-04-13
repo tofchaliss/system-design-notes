@@ -357,3 +357,100 @@ Write-back (write-behind): writes are efficient and centralized in the cache; th
 - Response Time
 - Throughput
 - Error Rate
+
+## CAP Theorem
+
+- Consistency : Always reading the latest data.
+- Availability: Always serving.
+- Partition Tolerance: No single point of failure.Individually nodes aking requests to other nodes.
+
+## PACELC Theorem
+
+If there is a Partition (P), choose between Availability (A) or Consistency (C);
+Else (E), choose between Latency (L) or Consistency (C).
+
+CAP answers: “What happens when the network breaks?”
+PACELC answers: “What trade-offs do you make all the time, even when nothing is broken?”
+
+Examples
+
+- DynamoDB / Cassandra → PA/EL: (Highly available + low latency, eventual consistency)
+- Spanner / CockroachDB → PC/EC: (Strong consistency even at cost of latency)
+
+## Sharding and Data Partitioning
+
+- Sharding: When a table is divided horizontally you get a shard which means the divided shard is bhaving all attributes of original table.
+  - Replication Sharding
+  - Range base sharding
+  - Logical sharding
+
+- Data Partitioning: When a table is divided vertically you get a partition which means the divided partition is behaving as a single table and application need to manually get the table information and make original table if needed to get all the data from the original table
+
+### Hot spots
+
+Happens when one shard receives more traffic than the other shards. This occur because of the distribution of data on the shards.This can include like :
+    -   Poor partitioning key design: Like coutry when most user are from same country.
+    -   Sequential or monotonic keys: Timestamp
+    -   Popular entities (celebrity problem)
+    -   Range base partitioning skew: 0-1000, 1001-2000 where most id in 1001-2000
+    -   Avoided using:
+        -   Better partitioning key design: High cardinality + evenly distributed keys
+        -   hash based partitioning
+        -   key salting
+        -   Read replicas / cache
+        -   Dynamic resharding: Apache cassandra, Amazon Dynamodb
+        -   Timebucketing: Timestamp + hash(user_id)
+
+### Multisharding queries
+
+Rather than using shard based on key this will be using multiple key: sharkey = user_id changed to shard_key = f(user_id, time, region)
+
+- Composite sharding key
+- Hierrical sharding (region of user group + group inside main group) Eg: asia+Japan
+- Functional / Domain based sharding: Sharded by order_id, user_id, los using timestamp
+- Time and hash based sharding
+- Geo Hashing: shard_id = region + hash(user_id) , gives data locality
+
+### Key / Hash based sharding
+
+Kind of data partitioning startegy where data is distributed based on key or hash value. It is used because of:
+    Simple routing logic
+    Even data distribution
+    High write scalability
+
+Poor in range based queries, hard to rebalance when adding shards, hot-spots can be existing if key is skewed.
+
+Used heavily in :
+
+- Apache cassandra
+- Amazon Dynamodb
+
+### Consistent hashing
+
+Consistent caching is data sharding/partitioning technique that evenly distributes the data across nodes in a way that minimizes data movement when nodes are added or removed.
+
+when using shard_key = hash(user_id) % N, massive data reshuffling, cache invalidation, downtime risk
+
+Steps:
+
+- hash all nodes to a ring
+- hash each key to the same ring
+- Assign each key to next node in the ring
+
+So when adding or removing the node will affect only the data near to that node.
+
+#### virtual nodes
+
+Real system not just assign one node but multiple nodes(virtual).
+
+Node A → A1, A2, A3...
+Node B → B1, B2, B3...
+
+Limitations:
+
+- lightly more complex routing logic
+- Requires careful vnode configuration
+
+Not ideal for:
+    Range queries
+    Strong locality requirements.
