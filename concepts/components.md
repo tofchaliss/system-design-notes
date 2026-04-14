@@ -238,31 +238,6 @@ Write-through is a caching pattern where the application writes directly to the 
 
 ASCII flow diagram (Write-through):
 
-```text
-        +-------------+
-        | Application |
-        +-------------+
-               |
-               v
-        +-----------------+       +-----------------+
-        |   Check Cache   |  ----> |   Write to DB   |
-        +-----------------+       +-----------------+
-           |         |
-          Hit       Miss
-           |          |
-           v          v
-      (Return)   +-----------------+
-                 |   Read from DB  |
-                 +-----------------+
-                        |
-                        v
-                 +-----------------+
-                 |  Populate Cache |
-                 +-----------------+
-                        |
-                        v
-                     (Return)
-```
 
 Write steps:
 
