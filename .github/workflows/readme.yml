@@ -1,25 +1,53 @@
-- name: Generate README from headers
-  run: |
-    echo "# 📚 Components Index" > README.md
-    echo "" >> README.md
+name: Generate README
 
-    awk '
-    function anchor(text) {
-      text = tolower(text)
-      gsub(/[^\w\s-]/, "", text)
-      gsub(/\s+/, "-", text)
-      return text
-    }
+on:
+  push:
+    paths:
+      - concepts/components.md
+  workflow_dispatch:
 
-    /^#{1,6} / {
-      level = length($1)
-      $1 = ""
-      title = substr($0, 2)
-      gsub(/^ +/, "", title)
+permissions:
+  contents: write
 
-      indent = ""
-      for (i = 1; i < level; i++) indent = indent "  "
+jobs:
+  build:
+    runs-on: ubuntu-latest
 
-      print indent "- [" title "](concepts/components.md#" anchor(title) ")"
-    }
-    ' concepts/components.md >> README.md
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate README from headers
+        run: |
+          echo "# 📚 Components Index" > README.md
+          echo "" >> README.md
+
+          awk '
+          function anchor(text) {
+            text = tolower(text)
+            gsub(/[^\w\s-]/, "", text)
+            gsub(/\s+/, "-", text)
+            return text
+          }
+
+          /^#{1,6} / {
+            level = length($1)
+            $1 = ""
+            title = substr($0, 2)
+            gsub(/^ +/, "", title)
+
+            indent = ""
+            for (i = 1; i < level; i++) indent = indent "  "
+
+            print indent "- [" title "](concepts/components.md#" anchor(title) ")"
+          }
+          ' concepts/components.md >> README.md
+
+      - name: Commit changes
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+
+          git add README.md
+          git diff --cached --quiet || git commit -m "Auto-update README"
+
+          git push origin HEAD:${{ github.ref_name }}
