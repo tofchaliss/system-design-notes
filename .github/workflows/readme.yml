@@ -1,39 +1,25 @@
-name: Generate README
+- name: Generate README from headers
+  run: |
+    echo "# 📚 Components Index" > README.md
+    echo "" >> README.md
 
-on:
-  push:
-    paths:
-      - concepts/components.md
-  workflow_dispatch:
+    awk '
+    function anchor(text) {
+      text = tolower(text)
+      gsub(/[^\w\s-]/, "", text)
+      gsub(/\s+/, "-", text)
+      return text
+    }
 
-permissions:
-  contents: write   # ✅ REQUIRED
+    /^#{1,6} / {
+      level = length($1)
+      $1 = ""
+      title = substr($0, 2)
+      gsub(/^ +/, "", title)
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
+      indent = ""
+      for (i = 1; i < level; i++) indent = indent "  "
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Generate README from headers
-        run: |
-          if [ -f concepts/components.md ]; then
-            grep -E '^#{1,6} ' concepts/components.md > README.md
-          else
-            echo "File not found!"
-            exit 1
-          fi
-
-      - name: Commit changes
-        run: |
-          git config user.name "github-actions"
-          git config user.email "actions@github.com"
-
-          git add README.md
-
-          # Avoid failure if no changes
-          git diff --cached --quiet || git commit -m "Auto-update README"
-
-          # Fix detached HEAD push
-          git push origin HEAD:${{ github.ref_name }}
+      print indent "- [" title "](concepts/components.md#" anchor(title) ")"
+    }
+    ' concepts/components.md >> README.md
