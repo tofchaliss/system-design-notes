@@ -4,25 +4,36 @@ on:
   push:
     paths:
       - concepts/components.md
-  workflow_dispatch: 
+  workflow_dispatch:
 
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+permissions:
+  contents: write   # ✅ REQUIRED
 
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
       - name: Generate README from headers
         run: |
-          grep -E '^#{1,6} ' concepts/components.md > README.md
+          if [ -f concepts/components.md ]; then
+            grep -E '^#{1,6} ' concepts/components.md > README.md
+          else
+            echo "File not found!"
+            exit 1
+          fi
 
       - name: Commit changes
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
+
           git add README.md
-          git commit -m "Auto-update README"
-          git push
+
+          # Avoid failure if no changes
+          git diff --cached --quiet || git commit -m "Auto-update README"
+
+          # Fix detached HEAD push
+          git push origin HEAD:${{ github.ref_name }}
