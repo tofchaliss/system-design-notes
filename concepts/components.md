@@ -427,7 +427,10 @@ Used heavily in :
 
 ### Consistent hashing
 
-Consistent caching is data sharding/partitioning technique that evenly distributes the data across nodes in a way that minimizes data movement when nodes are added or removed.
+Consistent caching is data sharding/partitioning technique that evenly distributes the data across nodes in a way that minimizes data movement when nodes are added or removed. This address 2 problems:
+
+1. Backup or migration if one node is down, by adding more nodes and re-distributing the data
+2. Load balancing using virtual nodes
 
 when using shard_key = hash(user_id) % N, massive data reshuffling, cache invalidation, downtime risk
 
@@ -452,5 +455,6 @@ Limitations:
 - Requires careful vnode configuration
 
 Not ideal for:
-    Range queries
-    Strong locality requirements.
+
+- Range queries
+- Strong locality requirements.
