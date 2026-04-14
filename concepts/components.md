@@ -191,31 +191,6 @@ Read-through is a caching pattern where the application reads from the cache fir
 
 ASCII flow diagram (Read-through):
 
-```text
-        +-------------+
-        | Application |
-        +-------------+
-               |
-               v
-        +-----------------+
-        |   Check Cache   |
-        +-----------------+
-           |         |
-          Hit       Miss
-           |          |
-           v          v
-      (Return)   +-----------------+
-                 |   Read from DB  |
-                 +-----------------+
-                        |
-                        v
-                 +-----------------+
-                 |  Populate Cache |
-                 +-----------------+
-                        |
-                        v
-                     (Return)
-```
 
 ASCII flow diagram (Read-through — read path):
 
