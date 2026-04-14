@@ -1,29 +1,31 @@
-# Core Components
-## Reliability
-## Faults and Failures
-## Failover Strategies
-## Fault Tolerance
-## Resilience
-## SLA, SLO, SLI
-## Failure-avoidance Measures
-## Upstream and Downstream Components
-## Scalability
-## Maintainability
-## ACID and BASE principles
-## Proxy Servers
-## Cache
-### Cache-aside (Lazy Loading)
-### Read-through
-### Write-through
-### Write-back (Write-behind)
-## Summary  
-## Message Queue
-## Metrics
-## CAP Theorem
-## PACELC Theorem
-## Sharding and Data Partitioning
-### Hot spots
-### Multisharding queries
-### Key / Hash based sharding
-### Consistent hashing
-#### virtual nodes
+# 📚 Components Index
+
+- [Core Components](concepts/components.md#s)
+  - [Reliability](concepts/components.md#)
+  - [Faults and Failures](concepts/components.md#ss)
+  - [Failover Strategies](concepts/components.md#ss)
+  - [Fault Tolerance](concepts/components.md#)
+  - [Resilience](concepts/components.md#s)
+  - [SLA, SLO, SLI](concepts/components.md#sss)
+  - [Failure-avoidance Measures](concepts/components.md#-ss)
+  - [Upstream and Downstream Components](concepts/components.md#swss)
+  - [Scalability](concepts/components.md#s)
+  - [Maintainability](concepts/components.md#)
+  - [ACID and BASE principles](concepts/components.md#ss)
+  - [Proxy Servers](concepts/components.md#ss)
+  - [Cache](concepts/components.md#)
+    - [Cache-aside (Lazy Loading)](concepts/components.md#-s)
+    - [Read-through](concepts/components.md#-)
+    - [Write-through](concepts/components.md#w-)
+    - [Write-back (Write-behind)](concepts/components.md#w-w-)
+  - [Summary](concepts/components.md#s)
+  - [Message Queue](concepts/components.md#ss)
+  - [Metrics](concepts/components.md#s)
+  - [CAP Theorem](concepts/components.md#)
+  - [PACELC Theorem](concepts/components.md#)
+  - [Sharding and Data Partitioning](concepts/components.md#s)
+    - [Hot spots](concepts/components.md#ss)
+    - [Multisharding queries](concepts/components.md#ss)
+    - [Key / Hash based sharding](concepts/components.md#sss)
+    - [Consistent hashing](concepts/components.md#sss)
+      - [virtual nodes](concepts/components.md#s)
