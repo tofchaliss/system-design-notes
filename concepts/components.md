@@ -144,32 +144,16 @@ Caching can be implemented in the following ways:
 Cache-aside (also called lazy loading) is a common pattern where the application is responsible for reading from and writing to the cache. On a cache miss, the application fetches data from the backing store, updates the cache, and returns the result.
 
 ASCII flow diagram (Cache-Aside):
-
-```text
-        +-------------+
-        | Application |
-        +-------------+
-               |
-               v
-        +-----------------+
-        |   Check Cache   |
-        +-----------------+
-           |         |
-          Hit       Miss
-           |          |
-           v          v
-      (Return)   +-----------------+
-                 |   Read from DB  |
-                 +-----------------+
-                        |
-                        v
-                 +-----------------+
-                 |  Populate Cache |
-                 +-----------------+
-                        |
-                        v
-                     (Return)
-```
+''' Mermaid
+flowchart LR
+    Client --> Server
+    Server --> Cache
+    Cache  --> Server
+    Server -->|Read| DB
+    DB --> |Read| Server
+    Server -->|Write| DB
+    DB --> |Write| Server
+'''
 
 Steps:
 
@@ -190,6 +174,14 @@ Thundering Herds: a situation where a large number of requests are sent to the s
 Read-through is a caching pattern where the application reads from the cache first, then falls back to the backing store if the cache is not found. It's useful for read-heavy workloads where the cache is often hit.
 
 ASCII flow diagram (Read-through):
+''' Mermaid
+flowchart LR
+    Client --> Server
+    Server --> Cache
+    Cache  --> Server
+    Server -->|Read| DB
+    Server -->|Write| DB
+'''
 
 
 ASCII flow diagram (Read-through — read path):
