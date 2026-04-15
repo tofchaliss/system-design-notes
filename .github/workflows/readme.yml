@@ -31,10 +31,18 @@ jobs:
 
           /^#{1,6} / {
             level = length($1)
+
+            # Remove markdown header symbols (### etc.)
             $1 = ""
-            title = substr($0, 2)
+
+            # Extract clean title
+            title = $0
             gsub(/^ +/, "", title)
 
+            # Optional: skip top-level header
+            if (level == 1) next
+
+            # Indentation for nested structure
             indent = ""
             for (i = 1; i < level; i++) indent = indent "  "
 
@@ -48,6 +56,9 @@ jobs:
           git config user.email "actions@github.com"
 
           git add README.md
+
+          # Commit only if there are changes
           git diff --cached --quiet || git commit -m "Auto-update README"
 
+          # Push safely from detached HEAD
           git push origin HEAD:${{ github.ref_name }}
