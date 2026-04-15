@@ -144,16 +144,17 @@ Caching can be implemented in the following ways:
 Cache-aside (also called lazy loading) is a common pattern where the application is responsible for reading from and writing to the cache. On a cache miss, the application fetches data from the backing store, updates the cache, and returns the result.
 
 ASCII flow diagram (Cache-Aside):
-''' Mermaid
+
+```mermaid
 flowchart LR
     Client --> Server
-    Server --> Cache
-    Cache  --> Server
-    Server -->|Read| DB
-    DB --> |Read| Server
-    Server -->|Write| DB
-    DB --> |Write| Server
-'''
+    Server --> |Read Check|Cache
+    Cache --> |Read Successful|Server
+    Server -->|Read DB, missed from cache| DB
+    DB --> |Reply Read DB| Server
+    Server -->|Write Request| DB
+    DB --> |Successful Write| Server
+```
 
 Steps:
 
