@@ -1,6 +1,5 @@
 # 📚 Components Index
 
-- [Core Components](concepts/components.md#s)
   - [Reliability](concepts/components.md#)
   - [Faults and Failures](concepts/components.md#ss)
   - [Failover Strategies](concepts/components.md#ss)
