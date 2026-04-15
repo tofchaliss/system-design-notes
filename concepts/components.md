@@ -1,4 +1,4 @@
-# Core Components
+# Core Concepts
 
 ## Reliability
 
