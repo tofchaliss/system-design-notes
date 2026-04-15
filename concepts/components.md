@@ -174,27 +174,14 @@ Thundering Herds: a situation where a large number of requests are sent to the s
 
 Read-through is a caching pattern where the application reads from the cache first, then falls back to the backing store if the cache is not found. It's useful for read-heavy workloads where the cache is often hit.
 
-ASCII flow diagram (Read-through):
-''' Mermaid
+```mermaid
 flowchart LR
     Client --> Server
-    Server --> Cache
-    Cache  --> Server
-    Server -->|Read| DB
-    Server -->|Write| DB
-'''
-
-
-ASCII flow diagram (Read-through — read path):
-
-```text
-   +-------------+          +-----------+          +----------+
-   | Application |  ---->   |   Cache   |  ---->   | Database |
-   +-------------+ (read)  +-----------+ (miss)   +----------+
-     |  ^                          |           |
-     |  |                          |           |
-     v  |                          v           v
-       (return)                      Populate    (store)
+    Server --> |Read Request|Cache
+    Cache --> |Read Successful|Server
+    Cache --> |Miss Read Request| DB
+    DB --> |Miss Successful Read| Cache 
+    Server -->|Write Request| DB
 ```
 
 Read steps:
@@ -204,18 +191,6 @@ Read steps:
 3. On a cache miss, the cache synchronously reads from the database, populates itself, and returns the value.
 
 Write flow (writes go directly to the database):
-
-```text
-    +-------------+      +-----------+
-    | Application | ----> | Database  |
-    +-------------+      +-----------+
-         |
-         v
-     (Optional) -->+----------------+
-         | Invalidate /   |
-         | Update Cache   |
-         +----------------+
-```
 
 Write steps:
 
@@ -229,7 +204,14 @@ Cons: writes bypass the cache, so the system must ensure cache invalidation or u
 
 Write-through is a caching pattern where the application writes directly to the cache and the backing store. It's useful for write-heavy workloads where the cache is often hit.
 
-ASCII flow diagram (Write-through):
+```mermaid
+flowchart LR
+    Client --> Server
+    Server --> |Read/Write Request|Cache
+    Cache --> |Read/Write Successful|Server
+    Cache --> |Req Read If Miss/Write Req|DB
+    DB --> |Read Reply/Write Successful| Cache 
+```
 
 
 Write steps:
@@ -244,38 +226,23 @@ Cons: reads bypass the cache, so the system must ensure cache invalidation or up
 
 Write-back is a caching pattern where the application writes directly to the cache and the backing store. It's useful for write-heavy workloads where the cache is often hit.
 
-ASCII flow diagram (Write-back):
-
-```text
-        +-------------+
-        | Application |
-        +-------------+
-               |
-               v
-        +-----------------+       +-----------------+
-        |   Check Cache   |  ----> |   Write to DB   |
-        +-----------------+       +-----------------+
-           |         |
-          Hit       Miss
-           |          |
-           v          v
-      (Return)   +-----------------+        +-----------------+
-                 |   Read from DB  |  ---->  |   Write to DB   |
-                 +-----------------+        +-----------------+
-                        |
-                        v
-                 +-----------------+
-                 |  Populate Cache |
-                 +-----------------+
-                        |
-                        v
-                     (Return)Write to Cache
+```mermaid
+flowchart LR
+    Client --> Server
+    Server --> |Read/Write Request|Cache
+    Cache --> |Read/Write Successful|Server
+    Cache --> |Req Read If Miss|DB
+    DB --> |Read Reply| Cache 
+    Cache --> |Write Req Bulk|DB
+    Cache --> |Write Req Bulk|DB
+    Cache --> |Write Req Bulk|DB
 ```
 
 Write steps:
 
 1. The application writes directly to the cache.
 2. After a successful write, the application should either invalidate the cache entry or update it to avoid stale reads.
+3. The write will be in bulk which is not acknoledged to the client
 
 Pros: writes are efficient and centralized in the cache; the cache can control load on the backing store.
 Cons: reads bypass the cache, so the system must ensure cache invalidation or update logic to prevent stale data.
