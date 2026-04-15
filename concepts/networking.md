@@ -86,7 +86,7 @@ Dominated by IP protocl this layer responsible for routing and addressing.
 - The IP address need to be unique to each node/host and if it is public facing it should be know to everyone. RIR (Registry of Internet Resources) is used to register the IP address.
 - Public IP address: 0.0.0.0 to 89.0.142.86 and 237.84.2.178 to 244.178.44.111
 
-### Transport layer
+## Transport layer
 
 Dominated by TCP protocl this layer responsible for connection, data transfer, and error detection, flow control, and retransmission.
 
@@ -142,3 +142,78 @@ Most of the cases it will TCP unless specificed otherwise like:
 | Speed              | Faster                  | Slower due to overhead |
 | Use Cases          | Streaming, gaming, VoIP | Everything else        |
 
+## Application layer
+
+### HTTP: Hypertext Transfer Protocol
+
+- Dominated by HTTP protocl this layer responsible for client-server interaction, data exchange, and data processing.
+- Stateless protocol.
+- Request and Response
+- Key Concepts:
+  - Request Method: GET, POST, PUT, DELETE
+  - Status Code: 200, 404, 500 etc.
+  - Headers: Content-Type, Content-Length, etc.
+  - Body: Data sent in the request or response body.
+
+Status Codes:
+
+- 200: OK
+- 201: Created
+- 202: Accepted
+- 204: No Content
+- 301: Moved Permanently
+- 302: Found
+- 304: Not Modified
+- 400: Bad Request
+- 401: Unauthorized
+- 403: Forbidden
+- 404: Not Found
+- 500: Internal Server Error
+- 502: Bad Gateway
+- 503: Service Unavailable
+
+HTTP headers:
+
+HTTP headers are key-value pairs that are used to pass additional information about the request or response.
+
+- Content-Encoding: gzip, deflate, br
+- Content-Type: text/html, application/json, etc.
+- Content-Length: number of bytes in the body
+
+#### HTTPS: HTTP over TLS
+
+- Transport Layer Security (TLS) is a security protocol that provides encryption and authentication for data transmitted over the internet.
+- It is a secure protocol that uses public-key infrastructure (PKI) to establish a secure connection between a client and a server.
+- It uses SSL (Secure Sockets Layer) and TLS (Transport Layer Security) protocols to establish a secure connection between a client and a server.
+- It provides end-to-end encryption and authentication for data transmitted over the internet.
+
+## Communication of the services:
+
+### REST: Representational State Transfer:
+
+- Consider of having action on resources and getting information from resources.
+- Resource can be anything.
+- Primary focus on stateless services and action perform on resources. Borrowed verbs from HTTP.
+- JSON to represent resources.
+
+Requesting a resource to GET resource id using *id*:
+
+```json
+GET /users/{id} -> User
+```
+
+Updating the resource to PUT resource id using *id*:
+
+```json
+PUT /users/{id} -> User
+{
+  "username": "john.doe",
+  "email": "john.doe@example.com"
+}
+```
+
+Where to use REST:
+
+- Elastic search uses to manage document, configure indexes, etc.
+- Not good option on high throughput services.
+- Better default to REST + TCP, if not then gRPC, SSE, WebSockets
