@@ -217,3 +217,200 @@ Where to use REST:
 - Elastic search uses to manage document, configure indexes, etc.
 - Not good option on high throughput services.
 - Better default to REST + TCP, if not then gRPC, SSE, WebSockets
+
+### GraphQL: Graph Query Language
+
+- API designed by Facebook to query data from a server.
+- GraphQL is a query language for APIs and a runtime for executing queries by a server.
+- Address under-fetching and over-fetching to ask the server exactly what data they need.
+
+What it avoids:
+
+- cobble together a bunch of different requests to backend endpoints (imagine querying 1 API for a list of users and making 10 API calls to get their details)
+- create huge aggregation APIs which are hard to maintain and slow to change
+- write brand new APIs for every new page they want to display.
+- Too many data in single call creates long time to load.
+
+
+So the GraphQL queries will be asked in the query by frontend and backend respond to the query which is applicable to frontend by backend.
+
+```graphql
+query GetUsersWithProfilesAndGroups($limit: Int = 10, $offset: Int = 0) {
+  users(limit: $limit, offset: $offset) {
+    id
+    username
+    //...
+    
+    profile {
+      id
+      fullName
+      avatar
+      // ...
+    }
+    
+    groups {
+      id
+      name
+      description
+      // ...
+      
+      category {
+        id
+        name
+        icon
+      }
+    }
+    
+    status {
+      isActive
+      lastActiveAt
+    }
+  }
+  
+  _metadata {
+    totalCount
+    hasNextPage
+  }
+}
+```
+
+Where to use GraphQL:
+
+- Ideal for frontend team to iterate quickly and adjust.
+- GraphQL query can create latency and complexity.
+- Good to have balance between complexity of clients and multple team making overlapping data requests.
+
+### gRPC: Google Remote Procedure Call
+
+- developed by Google.
+- uses HTTP2 and protocol buffers.
+- rigid schema and message efficient serialization.
+- definition for the resource and service definition.
+- No stream support for gRPC, no browser support till today.
+
+Resource definition for User:
+
+```protobuf
+message User {
+  string id = 1;
+  string name = 2;
+}
+```
+
+User service schema:
+
+```protobuf
+
+message GetUserRequest {
+  string id = 1;
+}
+
+message GetUserResponse {
+  User user = 1;
+}
+
+service UserService {
+  rpc GetUser (GetUserRequest) returns (GetUserResponse);
+}
+```
+
+Where to use gRPC:
+
+- Ideal for microservice architecture.
+- Its strong typing helps catch errors at compile time rather than runtime
+- Its binary protocol is more efficient than JSON over HTTP (some benchmarks show a factor of 10x throughput!).
+- Consider gRPC for internal service-to-service communication, especially when performance is critical or when latencies are dominated by the network rather than the work the server is doing.
+
+When to use gRPC and REST:
+
+- gRPC is used for internal service-to-service communication.
+- REST is used for external service-to-service communication. [External facing API]
+
+Picturise the communication:
+
+```mermaid
+flowchart LR
+    Client --> |HTTP| WebServer
+    Client --> |REST or HTTP| APIServer
+    WebServer --> |gRPC| HPCServer
+    HPCServer --> |gRPC| InternalAPIServer
+    InternalAPIServer --> |gRPC| APIServer
+```
+
+### SSE: Server-Sent Events
+
+- Driven by server, pushong multiple messages to client over HTTP.
+- When client tries to connect server, server opens a connection and keep it open. Tracks the connection if needs to open again if it was closed because of network elements.
+- Multiple message comes from server to client over one TCP connection.
+
+```text
+data: {"id": 1, "timestamp": "2025-01-01T00:00:00Z", "description": "Event 1"}
+data: {"id": 2, "timestamp": "2025-01-01T00:00:01Z", "description": "Event 2"}
+...
+data: {"id": 100, "timestamp": "2025-01-01T00:00:10Z", "description": "Event 100"}
+```
+
+where to use SSE:
+
+- Ideal for real-time updates.
+- Good for push notifications.
+- you only need server → client updates
+- You want simple real-time streaming
+- You prefer HTTP-based infra (CDN, proxies, etc.)
+
+When not to use SSE:
+
+- Bad for real-time updates.
+- Low latecy realtime update
+- Connection might get closed by intermediate nodes because of timeout so server need to track the client and reconnect.
+- So the SSE standard defines the behavior of an EventSource object that, once the connection is closed, will automatically reconnect with the ID of the last message received.
+
+### WebSockets: RealTime bidirectional sockets
+
+- TCP connection between client ans server
+- Bidirectional communication and streaming of data. Though gRPC support it it doesnt support browser support.
+- Can be used by upgrade capability of HTTP.
+
+How it works:
+
+- Client initiates WebSocket handshake over HTTP (with a backing TCP connection)
+- Connection upgrades to WebSocket protocol, WebSocket takes over the TCP connection
+- Both client and server can send binary messages to each other over the connection
+- The connection stays open until explicitly closed
+
+where to use WebSockets:
+
+- High-frequency, persistent, bi-directional communication between client and server. 
+- Think real-time applications, games, and other use-cases where you need to send and receive messages as soon as they happen.
+
+When not to use WebSockets:
+
+- Just for real-time updates(it is an overkill).
+- If infra not supporting WebSockets.
+
+### WebRTC: Peer to peer real time communication:
+
+- Uses UDP.
+- Direct use of communication between client browser with server.
+- Spec and interfaces are defined by W3C.
+
+Use of STUN and TURN servers:
+
+- STUN: "Session Traversal Utilities for NAT" is a protocol and a set of techniques like "hole punching" which allows peers to establish publically routable addresses and ports. It's a standard way to deal with NAT traversal and it involves repeatedly creating open ports and sharing them via the signaling server with peers.
+- TURN: "Traversal Using Relays around NAT" is effectively a relay service, a way to bounce requests through a central server which can then be routed to the appropriate peer.
+
+How it works:
+
+- client talk to central signaling server, it tracks the peers.
+- client has the connection information for another peer, they can try to establish a direct connection without going through any intermediary servers.
+- most clients don't allow inbound connections for security reasons and the majority of users are behind a NAT (network address translation) device which keeps them from being connected to directly.
+- Clients connect to a central signaling server to learn about their peers.
+- Clients reach out to a STUN server to get their public IP address and port.
+- Clients share this information with each other via the signaling server.
+- Clients establish a direct peer-to-peer connection and start sending data.
+
+Where to use WebRTC:
+
+- WebRTC is ideal for audio/video calling and conferencing applications
+- collaborative applications like document editors, especially if they need to scale to many clients.
+- Alternative CRDT (Conflict-Free Replicated Data Types) for collaborative applications.
