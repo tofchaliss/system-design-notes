@@ -3,7 +3,7 @@ name: Generate README
 on:
   push:
     paths:
-      - concepts/*.md
+      - concepts/**/*.md
   workflow_dispatch:
 
 permissions:
