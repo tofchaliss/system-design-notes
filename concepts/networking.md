@@ -414,3 +414,280 @@ Where to use WebRTC:
 - WebRTC is ideal for audio/video calling and conferencing applications
 - collaborative applications like document editors, especially if they need to scale to many clients.
 - Alternative CRDT (Conflict-Free Replicated Data Types) for collaborative applications.
+
+## Load Balancer:
+
+- Load balancer is a component of a distributed system that distributes incoming requests among multiple backend servers.
+- Vertical or horizontal scaling.
+- Common pattern for scalining in load balancing is horizontal scaling.
+
+Types of load balancing:
+
+### Client side load balancing:
+
+- client side load balancing is a type of load balancing that is implemented on the client side of a distributed system.
+- Client decide which server to connect to. It may be through service registry or anyother algorithm like round robin.
+- faster as it is not involving hoping of the request.
+
+- Where is this used:
+  - Redis cluster using gossip protocol the nodes talk to each other.
+    - Key will be hashed to decide which server to connect to.
+    - If received in a wrong node the it is responded using *MOVED*
+  - DNS for the resolver will return a rotated list of server lists.
+    - Different client request will end up on different servers.
+
+- When to use client side load balancing:
+  - Client number is small.
+  - Large number of clients still they can tolerate the latency.
+  - Distributed system most of the time it will end up in client side load balancing.
+  
+```mermaid
+flowchart TD
+    A{Lot of clients} -->|No|D
+    A --> |Yes|B{Tolerate Update delay}
+    B --> |No|C[Dedicated Load balancer]
+    B --> |Yes|D[Client side load balancing]
+```
+
+### Server side load balancing:
+
+- server side load balancing is a type of load balancing that is implemented on the server side of a distributed system.
+- Implementation doesnt show how many servers behind the load balancers.
+- It sits between client and server hardware nodes.
+- Additional hop before it reaches the server.
+
+#### Layer 4 network load balancing:
+
+- Support TCP/UDP, routing decidion is based on IP address or port without knowing the content of the packet.
+- Maintain persistent TCP connections between client and server.
+- Are fast and efficient due to minimal packet inspection.
+- Cannot make routing decisions based on application data.
+- Are typically used when raw performance is the priority.
+- As mentioned above the TCP connection land on one server then all the consequent request from that connection will land on same server.
+
+Flow Diagram:
+
+1.Basic Flow diagram
+
+```mermaid
+flowchart LR
+    C["Client"] -->|"TCP/UDP Request"| LB["Layer 4 Load Balancer - VIP"]
+    LB -->|"Forwarded Connection"| S1["Server Instance 1"]
+    LB --> S2["Server Instance 2"]
+    LB --> S3["Server Instance 3"]
+
+    S1 -->|"Response"| LB
+    S2 -->|"Response"| LB
+    S3 -->|"Response"| LB
+    LB -->|"Response"| C
+```
+
+2.Full Proxy Mode:
+
+```mermaid
+flowchart LR
+    C[Client]
+
+    subgraph LB[Layer 4 Load Balancer]
+        LB1[Terminates Client TCP]
+        LB2[Creates New TCP to Backend]
+    end
+
+    S[Backend Server]
+
+    C -->|TCP Connection 1| LB1
+    LB1 --> LB2
+    LB2 -->|TCP Connection 2| S
+    S --> LB2
+    LB2 --> LB1
+    LB1 --> C
+```
+
+3.NAT Traversal with Pass through:
+
+
+```mermaid
+flowchart LR
+    C[Client] -->|TCP SYN| LB["Load Balancer (DNAT/SNAT)"]
+    LB -->|Forwarded Packet| S[Backend Server]
+
+    S -->|Response| LB
+    LB -->|Response| C
+```
+
+4.Connection Establishment:
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant LB as Load Balancer
+    participant S as Server
+
+    C->>LB: SYN
+    LB->>S: SYN (forwarded or new)
+    S-->>LB: SYN-ACK
+    LB-->>C: SYN-ACK
+    C->>LB: ACK
+    LB->>S: ACK
+```
+
+Where to use Layer-4 load balancing:
+
+- WebSockets.
+
+#### Layer 7 load balancing:
+
+- Layer 7 load balancer as name suggest works in application layer (HTTP).
+- Examine the packet, they can route, forwarda to specific servers.
+
+Layer 7 load balancers characteristics are:
+
+- Terminate incoming connections and create new ones to backend servers.
+- Can route based on request content (URL, headers, cookies, etc.).
+- More CPU-intensive due to packet inspection.
+- Provide more flexibility and features.
+- Better suited for HTTP-based traffic.
+
+Where to use it:
+
+- Used for HTTP traffic except for web-sockets.
+- Layer 4 load balancer used more for web sockets.
+
+Data flow diagram:
+
+```mermaid
+flowchart LR
+    C["Client"] -->|"HTTP Request"| LB["Layer 7 Load Balancer"]
+    
+    LB -->|"Route /api to service A"| S1["Service A - Instance 1"]
+    LB -->|"Route /api to service A"| S2["Service A - Instance 2"]
+    LB -->|"Route /images to service B"| S3["Service B - Instance 1"]
+
+    S1 -->|"HTTP Response"| LB
+    S2 -->|"HTTP Response"| LB
+    S3 -->|"HTTP Response"| LB
+
+    LB -->|"HTTP Response"| C
+```
+
+Sequence diagram:
+
+```mermaid
+sequenceDiagram
+    participant C as Client
+    participant LB as L7 Load Balancer
+    participant S as Backend Server
+
+    C->>LB: HTTPS Request GET /api/orders
+    LB->>LB: TLS termination and inspect request
+    LB->>LB: Apply routing rules
+    LB->>S: Forward HTTP request
+    S-->>LB: HTTP response
+    LB-->>C: HTTP response
+```
+
+#### Health check and Fault tolerance:
+
+- Health checks are a way for the load balancer to determine if a server is healthy.
+- Configured to check the server at different intervals and with different protocols.
+- Automatic failover capability makes load balancers essential for high availability.
+- Can detect and route around failures without user intervention.
+
+#### Algorithms:
+
+- Round Robin: Requests are distributed sequentially across servers
+- Random: Requests are distributed randomly across servers
+- Least Connections: Requests go to the server with the fewest active connections
+- Least Response Time: Requests go to the server with the fastest response time
+- IP Hash: Client IP determines which server receives the request (useful for session persistence)
+
+Real load balancers:
+
+- Hardware Load Balancers: Physical devices like F5 Networks BIG-IP
+- Software Load Balancers: HAProxy, NGINX, Envoy
+- Cloud Load Balancers: AWS ELB/ALB/NLB, Google Cloud Load Balancing, Azure Load Balancer
+
+
+### Topics to understand more:
+
+```mermaid
+mindmap
+  root((Networking and Distributed Systems))
+
+    Regionalization and Latency
+      Latency sources
+        Network distance
+        DNS resolution
+        TLS handshake
+      Techniques
+        Geo routing
+        Edge deployment
+        Anycast
+
+    Content Delivery Networks
+      Purpose
+        Reduce latency
+        Offload origin
+      Components
+        Edge nodes
+        Origin server
+      Techniques
+        Caching
+        Cache invalidation
+        TTL
+      Providers
+        Cloudflare
+        Akamai
+
+    Regional Partitioning
+      Data partitioning
+        Per region databases
+        Data locality
+      Traffic routing
+        Geo DNS
+        Latency based routing
+      Tradeoffs
+        Consistency vs latency
+        Replication complexity
+
+    Failure and Fault Handling
+      Types
+        Partial failure
+        Network partition
+        Node crash
+      Strategies
+        Redundancy
+        Failover
+        Health checks
+      Observability
+        Logging
+        Metrics
+        Tracing
+
+    Timeouts and Retries
+      Timeouts
+        Prevent resource blocking
+        Tune per service
+      Retries
+        Transient failures
+        Retry limits
+      Backoff
+        Exponential backoff
+        Jitter
+      Idempotency
+        Safe retries
+        Idempotent APIs
+
+    Circuit Breakers
+      States
+        Closed
+        Open
+        Half open
+      Behavior
+        Fail fast
+        Recovery probing
+      Benefits
+        Prevent cascading failure
+        Improve resilience
+
+```
