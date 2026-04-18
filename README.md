@@ -58,3 +58,23 @@
     - [Health check and Fault tolerance:](concepts/networking.md#health-check-and-fault-tolerance)
     - [Algorithms:](concepts/networking.md#algorithms)
   - [Topics to understand more:](concepts/networking.md#topics-to-understand-more)
+
+## Storage Retrival
+
+- [BitCask: A key value store](concepts/storage-retrival.md#bitcask-a-key-value-store)
+- [SSTable: Sorted String Table](concepts/storage-retrival.md#sstable-sorted-string-table)
+  - [Internal Structure of SSTable:](concepts/storage-retrival.md#internal-structure-of-sstable)
+  - [Write Path:](concepts/storage-retrival.md#write-path)
+  - [Read Path:](concepts/storage-retrival.md#read-path)
+  - [Compaction](concepts/storage-retrival.md#compaction)
+  - [Trade-offs](concepts/storage-retrival.md#trade-offs)
+  - [SSTables directly impact:](concepts/storage-retrival.md#sstables-directly-impact)
+- [LSM Tree: Log-Structured Merge Tree:](concepts/storage-retrival.md#lsm-tree-log-structured-merge-tree)
+  - [Flow diagram](concepts/storage-retrival.md#flow-diagram)
+- [Bloom Filter](concepts/storage-retrival.md#bloom-filter)
+  - [How it works](concepts/storage-retrival.md#how-it-works)
+- [Merkle Tree](concepts/storage-retrival.md#merkle-tree)
+  - [Where it’s used](concepts/storage-retrival.md#where-its-used)
+- [Database Indexing](concepts/storage-retrival.md#database-indexing)
+  - [Data in B-Tree](concepts/storage-retrival.md#data-in-b-tree)
+  - [Comparison](concepts/storage-retrival.md#comparison)
