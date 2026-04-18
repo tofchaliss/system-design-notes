@@ -689,5 +689,4 @@ mindmap
       Benefits
         Prevent cascading failure
         Improve resilience
-
 ```
