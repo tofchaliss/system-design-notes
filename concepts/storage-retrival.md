@@ -35,7 +35,7 @@ Cons:
 
 Example:
 
-- 
+-
 
 ## SSTable: Sorted String Table
 
@@ -56,7 +56,7 @@ Example:
 - MemTable + Logging + copies to SSD/HDD.
   - Log using Write Ahead Logging (WAL)
 
-### Internal Structure of SSTable:
+### Internal Structure of SSTable
 
 - Data blocks → actual key-value pairs (sorted)
 - Index block → helps locate keys quickly
@@ -84,7 +84,7 @@ flowchart LR
     FT -->|"Block offsets + metadata"| D4["Magic number and metadata"]
 ```
 
-### Write Path:
+### Write Path
 
 ```mermaid  
 flowchart LR
@@ -93,7 +93,7 @@ flowchart LR
     MEM -->|"Flush when full"| SST["SSTable on disk"]
 ```
 
-### Read Path:
+### Read Path
 
 Search order:
 
@@ -123,19 +123,19 @@ Since SSTables are immutable:
 - Compaction overhead
 - Storage amplification
 
-### SSTables directly impact:
+### SSTables directly impact
 
 - Latency → read amplification
 - Failure handling → WAL + immutable files = durability
 - Regional systems → used in distributed DBs (Cassandra)
 - Caching → Bloom filters reduce unnecessary reads
 
-## LSM Tree: Log-Structured Merge Tree:
+## LSM Tree: Log-Structured Merge Tree
 
 - Combination of SSTables and MemTables (No inplace update)
 - LSM = Memtable + SStable + WAL + compaction
 - LSM Tree = “Write everything fast in memory, flush to disk in sorted chunks, and continuously merge to stay efficient.”
-- It is not implemeneted a B-Tree, rather ain tree structure 
+- It is not implemeneted a B-Tree, rather ain tree structure
 
 In-memory Updates::
 
@@ -314,12 +314,86 @@ flowchart TB
 - CDNs / storage systems
 - Data integrity and deduplication
 
-## Database Indexing
+## Mental Model of Database
 
-- Single or Multi-level indexing
-  - Single use primary keys or secondary keys or by clustering
-  - Multi-level index: Composite index (user_id + timestamp)
-- Multi-level indexing for faster searching uses B-Tree or B+Tree
+```mermaid
+flowchart TB
+
+    APP["Application"] --> QUERY["SQL Query"]
+
+    QUERY --> OPT["Query Optimizer"]
+    OPT --> EXEC["Execution Engine"]
+
+    EXEC --> IDX["Index B+ Tree"]
+    EXEC --> TABLE["Table Storage"]
+
+    IDX --> BUF["Buffer Cache (RAM)"]
+    TABLE --> BUF
+
+    BUF --> DISK["Disk (Pages / Files)"]
+```
+
+### Layer of the Database
+
+- Application Layer
+
+Sends the SQL query:
+
+```text
+SELECT * FROM users WHERE user_id = 1
+```
+
+- Query Optimizer Layer
+
+Decide:
+
+- Use index
+- Full Table scan
+
+- Execution Engine Layer
+
+  - Actually runs the plan
+  - Calls:
+    - Index Lookup
+    - Table Tech
+
+- Index Layer (B+ Tree)
+
+```mermaid
+flowchart TB
+    ROOT["Root"] --> I["Internal Node"]
+    I --> LEAF["Leaf Node"]
+    LEAF -->|"key → row pointer"| ROW["Row Location"]
+```
+
+- Fast lookup
+- Leaf gives
+
+```text
+key → primary key OR row pointer
+```
+
+- Table Storage
+
+  Two models:
+  - Heap (PostgreSQL style)
+    Rows stored unordered
+    Index → points to row location
+  - Clustered (InnoDB style)
+    Table itself is a B+ Tree
+    Leaf = actual row data
+
+- Buffer Layer
+
+  - RAM layer between DB and disk
+  - Stores frequently used pages
+
+- Disk Layer
+Data stored as pages (4KB–16KB)
+  Includes:
+  - Table pages
+  - Index pages
+  - WAL logs
 
 ### Data in B-Tree
 
@@ -345,6 +419,12 @@ Steps:
 - Repeat until leaf → get row pointer (or the row itself if it’s a clustered index)
 - Cost: O(log_b N) page reads (b = fan-out, often 100+)
 
+## Database Indexing
+
+- Single or Multi-level indexing
+  - Single use primary keys or secondary keys or by clustering
+  - Multi-level index: Composite index (user_id + timestamp)
+- Multi-level indexing for faster searching uses B-Tree or B+Tree
 Why B-Tree?
 
 - High fan-out ⇒ very low height ⇒ few I/Os
@@ -355,7 +435,7 @@ Why B+Tree?
 
 - B+-Tree optimizes both point lookups and range scans with minimal disk I/O and excellent locality.
   
-### Comparison
+### Comparison B-Tree vs B+-Tree
 
 | Feature           | B-Tree              | B+-Tree        |
 |------------------|--------------------|---------------|
