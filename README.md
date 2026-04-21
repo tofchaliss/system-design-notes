@@ -80,3 +80,4 @@
   - [Data in B-Tree](concepts/storage-retrival.md#data-in-b-tree)
 - [Database Indexing](concepts/storage-retrival.md#database-indexing)
   - [Comparison B-Tree vs B+-Tree](concepts/storage-retrival.md#comparison-b-tree-vs-b-tree)
+  - [B Tree](concepts/storage-retrival.md#b-tree)
