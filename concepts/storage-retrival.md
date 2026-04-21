@@ -220,6 +220,22 @@ flowchart TB
     R --> LNSST1
 ```
 
+- what happens when you write to a database that uses LSM trees:
+  - Memtable (Memory Component): New writes go into an in-memory structure called a memtable, typically implemented as a sorted data structure like a red-black tree or skip list. This is extremely fast since it's all in RAM.
+  - Write-Ahead Log (WAL): To ensure durability, every write is also appended to a write-ahead log on disk. This is a sequential append operation, which is much faster than random writes.
+  - Flush to SSTable: Once the memtable reaches a certain size (often a few megabytes), it's frozen and flushed to disk as an immutable Sorted String Table (SSTable). This is a single sequential write operation that can write megabytes of data at once.
+  - Compaction: Over time, you accumulate many SSTables on disk. A background process called compaction periodically merges these files, removing duplicates and deleted entries. This keeps the number of files manageable and maintains read performance.
+
+- When you query for a specific key, the database must check multiple places:
+  - First, the memtable: Is the data in the current in-memory buffer?
+  - Then, immutable memtables: Any memtables waiting to be flushed?
+  - Finally, all SSTables on disk: Starting from the newest (most likely to have recent data) and working backwards
+
+- LSM trees typically employ several optimizations:
+  - Bloom Filters: Each SSTable has an associated bloom filter - a probabilistic data structure that can quickly tell you if a key is definitely NOT in that file. This lets you skip most SSTables without reading them. If the bloom filter says "maybe", you still need to check, but it eliminates the definite misses.
+  - Sparse Indexes: Since SSTables are sorted, they maintain sparse indexes that tell you the range of keys in each block. If you're looking for user_id=500 and an SSTable only contains keys 1000-2000, you can skip it entirely.
+  - Compaction Strategies: Different compaction strategies optimize for different workloads. Size-tiered compaction minimizes write amplification but can lead to more files to check. Leveled compaction maintains fewer files but requires more frequent rewrites.
+
 - Write path
   - Write → WAL (durability)
   - Write → MemTable (RAM)
@@ -451,3 +467,52 @@ Examples:
 - MySQL InnoDB → clustered B+-Tree
 - PostgreSQL → B+-Tree indexes
 - SQLite → B+-Tree
+
+### B Tree
+
+```mermaid
+flowchart TB
+
+    %% Root Node
+    ROOT["Root Node| K1 | K2 |"]
+
+    %% Level 1
+    C1["Child 1| less than K1 |"]
+    C2["Child 2| K1 = K2 |"]
+    C3["Child 3| > K2 |"]
+
+    ROOT --> C1
+    ROOT --> C2
+    ROOT --> C3
+
+    %% Level 2 (Leaves)
+    L1["Leaf| k1 k2 k3 |"]
+    L2["Leaf| k4 k5 |"]
+    L3["Leaf| k6 k7 |"]
+    L4["Leaf| k8 k9 |"]
+
+    C1 --> L1
+    C1 --> L2
+    C2 --> L3
+    C3 --> L4
+```
+
+- Every node in a B-tree follows strict rules:
+- All leaf nodes must be at the same depth
+- Each node can contain between m/2 and m keys (where m is the order of the tree)
+- A node with k keys must have exactly k+1 children
+- Keys within a node are kept in sorted order
+
+Why B-Tree
+
+- They maintain sorted order, making range queries and ORDER BY operations efficient
+- They're self-balancing, ensuring predictable performance even as data grows
+- They minimize disk I/O by matching their structure to how databases store data
+- They handle both equality searches (email = 'x') and range searches (age > 25) equally well
+- They remain balanced even with random inserts and deletes, avoiding the performance cliffs you might see with simpler tree structures
+
+Examples:
+
+- PostgreSQL automatically creates two B-tree indexes: one for the primary key and one for the unique email constraint. These B-trees maintain sorted order, which is crucial for both uniqueness checks and range queries.
+- DynamoDB organizes items within a partition in sort-key order, enabling efficient range queries within that partition. Its storage internals aren’t publicly documented in detail, but it’s widely understood to use an LSM-style storage architecture rather than a B-tree for its underlying engine.
+- Even MongoDB, with its document model, uses B-trees (specifically B+ trees, a variant where all data is stored in leaf nodes) for its indexes.
