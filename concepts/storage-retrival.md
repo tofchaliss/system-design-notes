@@ -130,128 +130,6 @@ Since SSTables are immutable:
 - Regional systems → used in distributed DBs (Cassandra)
 - Caching → Bloom filters reduce unnecessary reads
 
-## LSM Tree: Log-Structured Merge Tree
-
-- Combination of SSTables and MemTables (No inplace update)
-- LSM = Memtable + SStable + WAL + compaction
-- LSM Tree = “Write everything fast in memory, flush to disk in sorted chunks, and continuously merge to stay efficient.”
-- It is not implemeneted a B-Tree, rather ain tree structure
-
-In-memory Updates::
-
-Typically implemented as:
-
-- Skip list (most common)
-- Balanced tree (sometimes)
-
-LSM Approach:
-
-``` text
-Write → MemTable → SSTable → Compaction → Merged SSTables
-```
-
-B-Tree Approach:
-
-```text
-Write → Find node → Modify node → Rebalance tree
-```
-
-Why LSM avoids B-Trees
-
-- Problem with B-Trees
-- Random disk I/O (slow on SSD/HDD for writes)
-- Frequent node splits
-
-LSM solution
-
-- Sequential writes only
-- Batch compaction later
-
-### Flow diagram
-
-```mermaid
-flowchart TB
-
-    %% Write Path
-    W["Write"] --> WAL["WAL Log (Disk)"]
-    W --> MEM["MemTable (RAM)"]
-
-    %% Flush
-    MEM -->|"Flush & Compaction"| L0SST["Level 0 SSTable"]
-    MEM -->|"Flush & Compaction"| L0IDX["Level 0 Index"]
-
-    %% Levels (Disk)
-    subgraph DISK["Disk Storage"]
-        direction TB
-
-        subgraph L0["Level 0"]
-            L0IDX
-            L0SST
-        end
-
-        subgraph L1["Level 1"]
-            L1IDX1["Index"]
-            L1SST1["SSTable"]
-            L1IDX2["Index"]
-            L1SST2["SSTable"]
-        end
-
-        subgraph LN["Level N"]
-            LNIDX1["Index"]
-            LNSST1["SSTable"]
-            LNIDX2["Index"]
-            LNSST2["SSTable"]
-        end
-    end
-
-    %% Compaction
-    L0SST -->|"Major Compaction"| L1SST1
-    L1SST1 -->|"Compaction"| LNSST1
-
-    %% Read Path
-    R["Read"] --> BF["Bloom Filter (RAM)"]
-    R --> MEM
-
-    BF --> L0SST
-    BF --> L1SST1
-    BF --> LNSST1
-
-    %% Optional direct read fallback
-    R --> LNSST1
-```
-
-- what happens when you write to a database that uses LSM trees:
-  - Memtable (Memory Component): New writes go into an in-memory structure called a memtable, typically implemented as a sorted data structure like a red-black tree or skip list. This is extremely fast since it's all in RAM.
-  - Write-Ahead Log (WAL): To ensure durability, every write is also appended to a write-ahead log on disk. This is a sequential append operation, which is much faster than random writes.
-  - Flush to SSTable: Once the memtable reaches a certain size (often a few megabytes), it's frozen and flushed to disk as an immutable Sorted String Table (SSTable). This is a single sequential write operation that can write megabytes of data at once.
-  - Compaction: Over time, you accumulate many SSTables on disk. A background process called compaction periodically merges these files, removing duplicates and deleted entries. This keeps the number of files manageable and maintains read performance.
-
-- When you query for a specific key, the database must check multiple places:
-  - First, the memtable: Is the data in the current in-memory buffer?
-  - Then, immutable memtables: Any memtables waiting to be flushed?
-  - Finally, all SSTables on disk: Starting from the newest (most likely to have recent data) and working backwards
-
-- LSM trees typically employ several optimizations:
-  - Bloom Filters: Each SSTable has an associated bloom filter - a probabilistic data structure that can quickly tell you if a key is definitely NOT in that file. This lets you skip most SSTables without reading them. If the bloom filter says "maybe", you still need to check, but it eliminates the definite misses.
-  - Sparse Indexes: Since SSTables are sorted, they maintain sparse indexes that tell you the range of keys in each block. If you're looking for user_id=500 and an SSTable only contains keys 1000-2000, you can skip it entirely.
-  - Compaction Strategies: Different compaction strategies optimize for different workloads. Size-tiered compaction minimizes write amplification but can lead to more files to check. Leveled compaction maintains fewer files but requires more frequent rewrites.
-
-- Write path
-  - Write → WAL (durability)
-  - Write → MemTable (RAM)
-  - MemTable → flushed to Level 0 SSTables
-- Storage layout
-  - Levels: L0 → L1 → LN
-  - Each level has:
-    - SSTables
-    - Index blocks
-- Compaction
-  - L0 → L1 → LN (progressive merge)
-- Read path
-  - Read → MemTable (fastest)
-  - Read → Bloom Filter (avoid unnecessary disk hits)
-  - Then → SSTables (newer to older)
-
 ## Bloom Filter
 
 - O(1) lookup and datastructure
@@ -516,3 +394,380 @@ Examples:
 - PostgreSQL automatically creates two B-tree indexes: one for the primary key and one for the unique email constraint. These B-trees maintain sorted order, which is crucial for both uniqueness checks and range queries.
 - DynamoDB organizes items within a partition in sort-key order, enabling efficient range queries within that partition. Its storage internals aren’t publicly documented in detail, but it’s widely understood to use an LSM-style storage architecture rather than a B-tree for its underlying engine.
 - Even MongoDB, with its document model, uses B-trees (specifically B+ trees, a variant where all data is stored in leaf nodes) for its indexes.
+
+### LSM Tree: Log-Structured Merge Tree
+
+- Combination of SSTables and MemTables (No inplace update)
+- LSM = Memtable + SStable + WAL + compaction
+- LSM Tree = “Write everything fast in memory, flush to disk in sorted chunks, and continuously merge to stay efficient.”
+- It is not implemeneted a B-Tree, rather ain tree structure
+
+In-memory Updates::
+
+Typically implemented as:
+
+- Skip list (most common)
+- Balanced tree (sometimes)
+
+LSM Approach:
+
+``` text
+Write → MemTable → SSTable → Compaction → Merged SSTables
+```
+
+B-Tree Approach:
+
+```text
+Write → Find node → Modify node → Rebalance tree
+```
+
+Why LSM avoids B-Trees
+
+- Problem with B-Trees
+- Random disk I/O (slow on SSD/HDD for writes)
+- Frequent node splits
+
+LSM solution
+
+- Sequential writes only
+- Batch compaction later
+
+### Flow diagram
+
+```mermaid
+flowchart TB
+
+    %% Write Path
+    W["Write"] --> WAL["WAL Log (Disk)"]
+    W --> MEM["MemTable (RAM)"]
+
+    %% Flush
+    MEM -->|"Flush & Compaction"| L0SST["Level 0 SSTable"]
+    MEM -->|"Flush & Compaction"| L0IDX["Level 0 Index"]
+
+    %% Levels (Disk)
+    subgraph DISK["Disk Storage"]
+        direction TB
+
+        subgraph L0["Level 0"]
+            L0IDX
+            L0SST
+        end
+
+        subgraph L1["Level 1"]
+            L1IDX1["Index"]
+            L1SST1["SSTable"]
+            L1IDX2["Index"]
+            L1SST2["SSTable"]
+        end
+
+        subgraph LN["Level N"]
+            LNIDX1["Index"]
+            LNSST1["SSTable"]
+            LNIDX2["Index"]
+            LNSST2["SSTable"]
+        end
+    end
+
+    %% Compaction
+    L0SST -->|"Major Compaction"| L1SST1
+    L1SST1 -->|"Compaction"| LNSST1
+
+    %% Read Path
+    R["Read"] --> BF["Bloom Filter (RAM)"]
+    R --> MEM
+
+    BF --> L0SST
+    BF --> L1SST1
+    BF --> LNSST1
+
+    %% Optional direct read fallback
+    R --> LNSST1
+```
+
+- what happens when you write to a database that uses LSM trees:
+  - Memtable (Memory Component): New writes go into an in-memory structure called a memtable, typically implemented as a sorted data structure like a red-black tree or skip list. This is extremely fast since it's all in RAM.
+  - Write-Ahead Log (WAL): To ensure durability, every write is also appended to a write-ahead log on disk. This is a sequential append operation, which is much faster than random writes.
+  - Flush to SSTable: Once the memtable reaches a certain size (often a few megabytes), it's frozen and flushed to disk as an immutable Sorted String Table (SSTable). This is a single sequential write operation that can write megabytes of data at once.
+  - Compaction: Over time, you accumulate many SSTables on disk. A background process called compaction periodically merges these files, removing duplicates and deleted entries. This keeps the number of files manageable and maintains read performance.
+
+- When you query for a specific key, the database must check multiple places:
+  - First, the memtable: Is the data in the current in-memory buffer?
+  - Then, immutable memtables: Any memtables waiting to be flushed?
+  - Finally, all SSTables on disk: Starting from the newest (most likely to have recent data) and working backwards
+
+- LSM trees typically employ several optimizations:
+  - Bloom Filters: Each SSTable has an associated bloom filter - a probabilistic data structure that can quickly tell you if a key is definitely NOT in that file. This lets you skip most SSTables without reading them. If the bloom filter says "maybe", you still need to check, but it eliminates the definite misses.
+  - Sparse Indexes: Since SSTables are sorted, they maintain sparse indexes that tell you the range of keys in each block. If you're looking for user_id=500 and an SSTable only contains keys 1000-2000, you can skip it entirely.
+  - Compaction Strategies: Different compaction strategies optimize for different workloads. Size-tiered compaction minimizes write amplification but can lead to more files to check. Leveled compaction maintains fewer files but requires more frequent rewrites.
+
+- Write path
+  - Write → WAL (durability)
+  - Write → MemTable (RAM)
+  - MemTable → flushed to Level 0 SSTables
+- Storage layout
+  - Levels: L0 → L1 → LN
+  - Each level has:
+    - SSTables
+    - Index blocks
+- Compaction
+  - L0 → L1 → LN (progressive merge)
+- Read path
+  - Read → MemTable (fastest)
+  - Read → Bloom Filter (avoid unnecessary disk hits)
+  - Then → SSTables (newer to older)
+
+### Hash Index
+
+Hash Index works for exact matching of what we are looking for. Though this capability is still in parity with postgresql with B-tree.
+
+```mermaid
+
+flowchart LR
+    A[Query Key] --> B[Hash Function]
+    B --> C[Hash Value]
+    C --> D[Bucket]
+
+    D --> E1[Entry 1]
+    D --> E2[Entry 2]
+    D --> E3[Entry 3]
+
+    E1 --> F1[Row Pointer]
+    E2 --> F2[Row Pointer]
+    E3 --> F3[Row Pointer]
+```
+
+- The database maintains an array of buckets, where each bucket can store multiple key-location pairs.
+- When indexing a value, the database hashes it to determine which bucket should store the pointer to the row data.
+
+Examples:
+
+- Used in redis for primary key lookup in in-memory.
+
+### Geo-Spatial Index
+
+As B-tree cant solve 2-D space indexing there are few indexing that helps that which includes:
+
+- Geohash
+- R-Tree
+- Quad-Tree
+
+
+- If we use the latitude index first, we'll find all restaurants in the right latitude range - but that's a long strip spanning the entire globe at that latitude! Then for each of those restaurants, we need to check if they're also in the right longitude range. Our index on longitude isn't helping because we're not doing a range scan - we're doing point lookups for each restaurant we found in the latitude range.
+- If we try to be clever and use both indexes together (via an index intersection), the database still has to merge two large sets of results - all restaurants in the right latitude range and all restaurants in the right longitude range. This creates a rectangular search area much larger than our actual circular search radius, and we still need to filter out results that are too far away.
+
+
+#### GeoHash
+
+- One space will be divided as Four blocks.
+- If entered to one quater then that will be divided again into four.
+- This keep going on, but the each cell will be having a seperate string and each string which is near will be having almost same string using base32.
+- Now complete map will be marked as string and use *B-tree* for search queries, with prefix match and range.
+
+```text
+GEOADD restaurants -122.4194 37.7749 "Restaurant A"
+GEOSEARCH restaurants FROMLONLAT -122.4194 37.7749 BYRADIUS 5 mi
+```
+
+- Limitation:
+
+  - On the boundaries in the same street you might have 2 different string but physically very close or just opposite.
+
+#### QuadTree
+
+- QuadTree is similar kind of GeoHash except the the data structure is a tree.
+- Each space is divided to 4 quadrants,
+- More dense parts will be again divided to 4 again. In this way dense will have quadrants and sparse will heaving only minimal.
+
+```mermaid
+flowchart TD
+    R["Root (Whole Space)"]
+
+    R --> Q1["NW Quadrant"]
+    R --> Q2["NE Quadrant"]
+    R --> Q3["SW Quadrant"]
+    R --> Q4["SE Quadrant"]
+
+    %% Only one quadrant subdivides further (adaptive behavior)
+    Q2 --> Q21["NE-NW"]
+    Q2 --> Q22["NE-NE"]
+    Q2 --> Q23["NE-SW"]
+    Q2 --> Q24["NE-SE"]
+
+    %% Leaf nodes with data
+    Q1 --> P1["Points"]
+    Q3 --> P3["Points"]
+    Q4 --> P4["Points"]
+
+    Q21 --> P21["Points"]
+    Q22 --> P22["Points"]
+    Q23 --> P23["Points"]
+    Q24 --> P24["Points"]
+```
+
+#### R-Tree
+
+- R-tree is a tree-based index for multi-dimensional spatial data (points, rectangles, polygons)
+- Uses Minimum Bounding Rectangles (MBRs) to represent and group objects
+- Organized hierarchically: parent MBRs fully contain child MBRs
+- Balanced tree structure (like B-tree) → consistent query performance
+- Insertion uses least-area enlargement heuristic to keep nearby objects together
+- Node splits aim to minimize overlap, area, and perimeter between regions
+- Query execution is based on MBR intersection checks, not linear ordering
+- Enables efficient range queries, spatial joins, and nearest-neighbor searches
+- Overlap between nodes can cause multiple branches to be explored (main limitation)
+- Widely used in databases like PostgreSQL (via GiST/PostGIS) for real-world geospatial workloads
+
+```mermaid
+flowchart TD
+    Root["Root MBR (covers everything)"]
+
+    Root --> A["Region A (MBR)"]
+    Root --> B["Region B (MBR)"]
+
+    A --> A1["Obj 1 MBR"]
+    A --> A2["Obj 2 MBR"]
+
+    B --> B1["Obj 3 MBR"]
+    B --> B2["Obj 4 MBR"]
+```
+
+### Inverted Index
+
+- B-tree excel for exact match, either prefix match or suffix match of the pattern
+- Inverted index support pattern matching anywhere in the content
+
+```text
+SELECT * FROM posts WHERE content LIKE '%database%';
+```
+
+``` text
+doc1: "B-trees are fast and reliable"
+doc2: "Hash tables are fast but limited"
+doc3: "B-trees handle range queries well"
+```
+
+Invert index create mapping
+
+```text
+b-trees  -> [doc1, doc3]
+fast     -> [doc1, doc2]
+reliable -> [doc1]
+hash     -> [doc2]
+tables   -> [doc2]
+limited  -> [doc2]
+handle   -> [doc3]
+range    -> [doc3]
+queries  -> [doc3]
+```
+
+Analysis pipeline
+
+- Breaking text into tokens (words or subwords)
+- Converting to lowercase
+- Removing common "stop words" like "the" or "and"
+- Often applying stemming (reducing words to their root form)
+
+Trade-Off:
+
+- More space
+- Updating as the document get updated
+
+Real Example
+
+- Elastic search
+
+### Index Optimization
+
+- processing overhead of common queries
+- checking query plans and database metrics using those check bottleneck
+- Indexing strategies
+- understand access pattern and indexing approach
+
+#### Composite Index
+
+- Rather than having index for single column it will mix of multiple columns and create a composite index in specific order.
+
+```text
+CREATE INDEX idx_user_time ON posts(user_id, created_at);
+```
+
+- creating a B-tree where each node's key is a concatenation of our indexed columns.
+- B-tree maintains these keys in sorted order based on user_id first, then created_at
+
+``` text
+(1, 2024-01-01)
+(1, 2024-01-02)
+(2, 2024-01-01)
+(2, 2024-01-02)
+(3, 2024-01-01)
+``` 
+
+- B-tree to find the first entry for user_id=123, then scan sequentially through the index entries for that user until it finds entries beyond our date range. 
+- Entries are already sorted by created_at within each user_id group, we get both our filtering and sorting for free.
+
+##### Order Index
+
+- Order columns from most selective to least selective.
+- Our index on (user_id, created_at) is great for queries that filter on user_id first, but it's not helpful for queries that only filter on created_at.
+- This follows from how B-trees work - we can only use the index efficiently for prefixes of our column list.
+- 
+
+
+#### Covering Index
+
+- covering index will have all the columns in the index
+
+``` text
+CREATE TABLE posts (
+    id SERIAL PRIMARY KEY,
+    user_id INT,
+    title TEXT,
+    content TEXT,
+    likes INT,
+    created_at TIMESTAMP
+);
+
+-- Regular index
+CREATE INDEX idx_user_time ON posts(user_id, created_at);
+
+-- Covering index includes likes column
+CREATE INDEX idx_user_time_likes ON posts(user_id, created_at) INCLUDE (likes);
+```
+
+- Aoid lot of extra disk reads.
+
+Trade-off
+
+- Covering indexes are larger because they store extra columns
+
+## Choices of Indexing
+
+
+```mermaid
+flowchart TD
+
+    A[Need efficient data access?] --> B{Table size > 10k rows?}
+
+    B -->|No| FT[Full Table Scan]
+    B -->|Yes| C{What type of data are you querying?}
+
+    C --> D{Full text search?}
+    D -->|Yes| INV[Inverted Index]
+    D -->|No| E{Location data?}
+
+    E -->|Yes| GEO[Geospatial Index]
+    E -->|No| F{In-memory exact matches?}
+
+    F -->|Yes| HASH[Hash Index]
+    F -->|No| BT[B-Tree]
+
+    BT --> G{Multiple columns queried together?}
+    G -->|Yes| COMP[Consider Composite Index]
+
+    COMP --> H{Heavy reads on few columns?}
+    G -->|No| H
+
+    H -->|Yes| COV[Consider Covering Index]
+    H -->|No| END[Done]
+```
