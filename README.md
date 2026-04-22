@@ -59,6 +59,28 @@
     - [Algorithms:](concepts/networking.md#algorithms)
   - [Topics to understand more:](concepts/networking.md#topics-to-understand-more)
 
+## Sharding
+
+- [Partioning](concepts/sharding.md#partioning)
+  - [Horizontal Partitioning](concepts/sharding.md#horizontal-partitioning)
+  - [Vertical Partitioning](concepts/sharding.md#vertical-partitioning)
+- [Sharding](concepts/sharding.md#sharding)
+  - [How to shard the data](concepts/sharding.md#how-to-shard-the-data)
+  - [Sharding strategies](concepts/sharding.md#sharding-strategies)
+    - [Range based sharding](concepts/sharding.md#range-based-sharding)
+    - [Hash based sharding](concepts/sharding.md#hash-based-sharding)
+    - [Directory based sharding](concepts/sharding.md#directory-based-sharding)
+- [Challenge:](concepts/sharding.md#challenge)
+  - [Hot spot](concepts/sharding.md#hot-spot)
+    - [Celebrity problem](concepts/sharding.md#celebrity-problem)
+    - [How to detect hotspot:](concepts/sharding.md#how-to-detect-hotspot)
+    - [How to handle hot spot:](concepts/sharding.md#how-to-handle-hot-spot)
+  - [Cross-Shard operations](concepts/sharding.md#cross-shard-operations)
+  - [How to avoid cross-shard operations](concepts/sharding.md#how-to-avoid-cross-shard-operations)
+  - [Modern Databases and Sharding](concepts/sharding.md#modern-databases-and-sharding)
+- [When to mention sharding](concepts/sharding.md#when-to-mention-sharding)
+- [Summary](concepts/sharding.md#summary)
+
 ## Storage Retrival
 
 - [BitCask: A key value store](concepts/storage-retrival.md#bitcask-a-key-value-store)
