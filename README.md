@@ -31,6 +31,27 @@
   - [Consistent hashing](concepts/core-concepts.md#consistent-hashing)
     - [virtual nodes](concepts/core-concepts.md#virtual-nodes)
 
+## Data Modeling
+
+- [Database Model Options](concepts/data-modeling.md#database-model-options)
+  - [Relational Databases (SQL)](concepts/data-modeling.md#relational-databases-sql)
+  - [Document Databases (NoSQL)](concepts/data-modeling.md#document-databases-nosql)
+    - [When to consider over SQL](concepts/data-modeling.md#when-to-consider-over-sql)
+    - [Data modeling impact](concepts/data-modeling.md#data-modeling-impact)
+  - [Key-Value Databases](concepts/data-modeling.md#key-value-databases)
+  - [Wide Column Databases](concepts/data-modeling.md#wide-column-databases)
+    - [How to visualize SQL and Wide Column](concepts/data-modeling.md#how-to-visualize-sql-and-wide-column)
+    - [When to to consider over SQL:](concepts/data-modeling.md#when-to-to-consider-over-sql)
+    - [Data modeling impact](concepts/data-modeling.md#data-modeling-impact-1)
+  - [Graph Database](concepts/data-modeling.md#graph-database)
+- [Schema Design Fundementals](concepts/data-modeling.md#schema-design-fundementals)
+  - [Requirement Phase checks](concepts/data-modeling.md#requirement-phase-checks)
+  - [Entities, Keys and relationships](concepts/data-modeling.md#entities-keys-and-relationships)
+  - [Indexing for patterns](concepts/data-modeling.md#indexing-for-patterns)
+  - [Normalizing and denormalizing](concepts/data-modeling.md#normalizing-and-denormalizing)
+  - [Scaling and Sharding](concepts/data-modeling.md#scaling-and-sharding)
+- [Mindmap for Schema design](concepts/data-modeling.md#mindmap-for-schema-design)
+
 ## Networking
 
 - [Network Layers](concepts/networking.md#network-layers)
