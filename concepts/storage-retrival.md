@@ -743,7 +743,6 @@ Trade-off
 
 ## Choices of Indexing
 
-
 ```mermaid
 flowchart TD
 
