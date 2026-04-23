@@ -1,5 +1,30 @@
 # 📚 System Design Notes
 
+## Caching
+
+- [Cache types](concepts/caching.md#cache-types)
+  - [External caching](concepts/caching.md#external-caching)
+    - [CDN: Content Delivery Network](concepts/caching.md#cdn-content-delivery-network)
+  - [client side caching](concepts/caching.md#client-side-caching)
+  - [In-Process caching](concepts/caching.md#in-process-caching)
+- [Cache Architecture](concepts/caching.md#cache-architecture)
+  - [Lazy-Aside Caching (Lazy Loading)](concepts/caching.md#lazy-aside-caching-lazy-loading)
+  - [Write-Through Caching](concepts/caching.md#write-through-caching)
+  - [Write-Behind Caching](concepts/caching.md#write-behind-caching)
+  - [Read-Through Caching](concepts/caching.md#read-through-caching)
+- [Cache Eviction Policies](concepts/caching.md#cache-eviction-policies)
+  - [LRU (Least Recently Used)](concepts/caching.md#lru-least-recently-used)
+  - [LFU (Least Frequently Used)](concepts/caching.md#lfu-least-frequently-used)
+  - [FIFO (First In First Out)](concepts/caching.md#fifo-first-in-first-out)
+  - [TTL (Time To Live)](concepts/caching.md#ttl-time-to-live)
+- [Caching Problems](concepts/caching.md#caching-problems)
+  - [Cache Stampede](concepts/caching.md#cache-stampede)
+  - [How to handle](concepts/caching.md#how-to-handle)
+    - [Cache stampede](concepts/caching.md#cache-stampede-1)
+    - [Cache Consistency](concepts/caching.md#cache-consistency)
+    - [Hot Keys](concepts/caching.md#hot-keys)
+- [Summary](concepts/caching.md#summary)
+
 ## Core Concepts
 
 - [Reliability](concepts/core-concepts.md#reliability)
