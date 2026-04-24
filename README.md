@@ -77,6 +77,11 @@
   - [Scaling and Sharding](concepts/data-modeling.md#scaling-and-sharding)
 - [Mindmap for Schema design](concepts/data-modeling.md#mindmap-for-schema-design)
 
+## Data Replication
+
+- [Database durability](concepts/data-replication.md#database-durability)
+  - [State diagram for database durability](concepts/data-replication.md#state-diagram-for-database-durability)
+
 ## Networking
 
 - [Network Layers](concepts/networking.md#network-layers)
