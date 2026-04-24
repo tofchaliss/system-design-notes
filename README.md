@@ -81,6 +81,15 @@
 
 - [Database durability](concepts/data-replication.md#database-durability)
   - [State diagram for database durability](concepts/data-replication.md#state-diagram-for-database-durability)
+    - [WAL (Write-Ahead Log)](concepts/data-replication.md#wal-write-ahead-log)
+    - [Replication](concepts/data-replication.md#replication)
+    - [Async write](concepts/data-replication.md#async-write)
+    - [Sync write](concepts/data-replication.md#sync-write)
+  - [What happens if one follower is down?](concepts/data-replication.md#what-happens-if-one-follower-is-down)
+  - [How to elect the leader?](concepts/data-replication.md#how-to-elect-the-leader)
+  - [How to know if leader is down?](concepts/data-replication.md#how-to-know-if-leader-is-down)
+  - [Decoupling and replication](concepts/data-replication.md#decoupling-and-replication)
+  - [How to maintain replicated logs](concepts/data-replication.md#how-to-maintain-replicated-logs)
 
 ## Networking
 
