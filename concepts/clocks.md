@@ -274,7 +274,11 @@ Note: *Same order across all replicas*
 
 ### Strict Ordering
 
+*Order matches real time*
 
+If A happens before B in real time → all nodes see A before B
+
+User writes → immediately reads → sees latest value
 
 ## Comparison
 
@@ -284,3 +288,12 @@ Note: *Same order across all replicas*
 | Causal       | Cause-effect order    | Collaborative apps |
 | Total        | Same global order     | Logs, replication  |
 | Linearizable | Real-time correctness | Databases          |
+
+Stronger ordering = more coordination = higher latency
+
+Examples:
+
+- FIFO → Kafka partition
+- Causal → Dynamo-style systems
+- Total → Kafka topic (single partition), Raft log
+- Linearizable → Spanner, etcd
