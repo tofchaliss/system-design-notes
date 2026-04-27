@@ -25,6 +25,31 @@
     - [Hot Keys](concepts/caching.md#hot-keys)
 - [Summary](concepts/caching.md#summary)
 
+## Clocks
+
+- [Clocks](concepts/clocks.md#clocks)
+  - [Realtime Clocks](concepts/clocks.md#realtime-clocks)
+  - [Quartz Clock](concepts/clocks.md#quartz-clock)
+  - [Atomic Clocks](concepts/clocks.md#atomic-clocks)
+  - [GPS Clocks](concepts/clocks.md#gps-clocks)
+- [Standard of Time](concepts/clocks.md#standard-of-time)
+  - [Adjustment](concepts/clocks.md#adjustment)
+  - [NTP (Network Time Protocol)](concepts/clocks.md#ntp-network-time-protocol)
+  - [How client sync time](concepts/clocks.md#how-client-sync-time)
+  - [Time Synchronization Protocol](concepts/clocks.md#time-synchronization-protocol)
+  - [Monotonic Clock](concepts/clocks.md#monotonic-clock)
+    - [Smearing Leap](concepts/clocks.md#smearing-leap)
+- [Logical Clocks](concepts/clocks.md#logical-clocks)
+  - [Lamport clock](concepts/clocks.md#lamport-clock)
+  - [Vector Clock](concepts/clocks.md#vector-clock)
+  - [Version Vector](concepts/clocks.md#version-vector)
+- [Ordering of events](concepts/clocks.md#ordering-of-events)
+  - [FIFO (First In First Out)](concepts/clocks.md#fifo-first-in-first-out)
+  - [Causal Ordering](concepts/clocks.md#causal-ordering)
+  - [Total Ordering](concepts/clocks.md#total-ordering)
+  - [Strict Ordering](concepts/clocks.md#strict-ordering)
+- [Comparison](concepts/clocks.md#comparison)
+
 ## Core Concepts
 
 - [Reliability](concepts/core-concepts.md#reliability)
