@@ -27,7 +27,7 @@
 
 ## Clocks
 
-- [Clocks](concepts/clocks.md#clocks)
+- [Types of Clocks](concepts/clocks.md#types-of-clocks)
   - [Realtime Clocks](concepts/clocks.md#realtime-clocks)
   - [Quartz Clock](concepts/clocks.md#quartz-clock)
   - [Atomic Clocks](concepts/clocks.md#atomic-clocks)
@@ -49,6 +49,9 @@
   - [Total Ordering](concepts/clocks.md#total-ordering)
   - [Strict Ordering](concepts/clocks.md#strict-ordering)
 - [Comparison](concepts/clocks.md#comparison)
+
+## Consistency
+
 
 ## Core Concepts
 
@@ -91,8 +94,8 @@
   - [Key-Value Databases](concepts/data-modeling.md#key-value-databases)
   - [Wide Column Databases](concepts/data-modeling.md#wide-column-databases)
     - [How to visualize SQL and Wide Column](concepts/data-modeling.md#how-to-visualize-sql-and-wide-column)
-    - [When to to consider over SQL:](concepts/data-modeling.md#when-to-to-consider-over-sql)
-    - [Data modeling impact](concepts/data-modeling.md#data-modeling-impact-1)
+    - [When to to consider over SQL](concepts/data-modeling.md#when-to-to-consider-over-sql)
+    - [Data modeling impacts](concepts/data-modeling.md#data-modeling-impacts)
   - [Graph Database](concepts/data-modeling.md#graph-database)
 - [Schema Design Fundementals](concepts/data-modeling.md#schema-design-fundementals)
   - [Requirement Phase checks](concepts/data-modeling.md#requirement-phase-checks)
@@ -130,26 +133,26 @@
   - [Hidden activities](concepts/networking.md#hidden-activities)
 - [Network layer](concepts/networking.md#network-layer)
 - [Transport layer](concepts/networking.md#transport-layer)
-    - [When to choose a specific protocol:](concepts/networking.md#when-to-choose-a-specific-protocol)
-    - [TCP vs UDP comparison:](concepts/networking.md#tcp-vs-udp-comparison)
+  - [When to choose a specific protocol](concepts/networking.md#when-to-choose-a-specific-protocol)
+    - [TCP vs UDP comparison](concepts/networking.md#tcp-vs-udp-comparison)
 - [Application layer](concepts/networking.md#application-layer)
   - [HTTP: Hypertext Transfer Protocol](concepts/networking.md#http-hypertext-transfer-protocol)
     - [HTTPS: HTTP over TLS](concepts/networking.md#https-http-over-tls)
-- [Communication of the services:](concepts/networking.md#communication-of-the-services)
-  - [REST: Representational State Transfer:](concepts/networking.md#rest-representational-state-transfer)
+- [Communication of the services](concepts/networking.md#communication-of-the-services)
+  - [REST: Representational State Transfer](concepts/networking.md#rest-representational-state-transfer)
   - [GraphQL: Graph Query Language](concepts/networking.md#graphql-graph-query-language)
   - [gRPC: Google Remote Procedure Call](concepts/networking.md#grpc-google-remote-procedure-call)
   - [SSE: Server-Sent Events](concepts/networking.md#sse-server-sent-events)
   - [WebSockets: RealTime bidirectional sockets](concepts/networking.md#websockets-realtime-bidirectional-sockets)
-  - [WebRTC: Peer to peer real time communication:](concepts/networking.md#webrtc-peer-to-peer-real-time-communication)
-- [Load Balancer:](concepts/networking.md#load-balancer)
-  - [Client side load balancing:](concepts/networking.md#client-side-load-balancing)
-  - [Server side load balancing:](concepts/networking.md#server-side-load-balancing)
-    - [Layer 4 network load balancing:](concepts/networking.md#layer-4-network-load-balancing)
-    - [Layer 7 load balancing:](concepts/networking.md#layer-7-load-balancing)
-    - [Health check and Fault tolerance:](concepts/networking.md#health-check-and-fault-tolerance)
-    - [Algorithms:](concepts/networking.md#algorithms)
-  - [Topics to understand more:](concepts/networking.md#topics-to-understand-more)
+  - [WebRTC: Peer to peer real time communication](concepts/networking.md#webrtc-peer-to-peer-real-time-communication)
+- [Load Balancer](concepts/networking.md#load-balancer)
+  - [Client side load balancing](concepts/networking.md#client-side-load-balancing)
+  - [Server side load balancing](concepts/networking.md#server-side-load-balancing)
+    - [Layer 4 network load balancing](concepts/networking.md#layer-4-network-load-balancing)
+    - [Layer 7 load balancing](concepts/networking.md#layer-7-load-balancing)
+    - [Health check and Fault tolerance](concepts/networking.md#health-check-and-fault-tolerance)
+    - [Algorithms](concepts/networking.md#algorithms)
+  - [Topics to understand more](concepts/networking.md#topics-to-understand-more)
 
 ## Sharding
 
@@ -162,11 +165,11 @@
     - [Range based sharding](concepts/sharding.md#range-based-sharding)
     - [Hash based sharding](concepts/sharding.md#hash-based-sharding)
     - [Directory based sharding](concepts/sharding.md#directory-based-sharding)
-- [Challenge:](concepts/sharding.md#challenge)
+- [Challenge](concepts/sharding.md#challenge)
   - [Hot spot](concepts/sharding.md#hot-spot)
     - [Celebrity problem](concepts/sharding.md#celebrity-problem)
-    - [How to detect hotspot:](concepts/sharding.md#how-to-detect-hotspot)
-    - [How to handle hot spot:](concepts/sharding.md#how-to-handle-hot-spot)
+    - [How to detect hotspot](concepts/sharding.md#how-to-detect-hotspot)
+    - [How to handle hot spot](concepts/sharding.md#how-to-handle-hot-spot)
   - [Cross-Shard operations](concepts/sharding.md#cross-shard-operations)
   - [How to avoid cross-shard operations](concepts/sharding.md#how-to-avoid-cross-shard-operations)
   - [Modern Databases and Sharding](concepts/sharding.md#modern-databases-and-sharding)
