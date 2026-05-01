@@ -52,6 +52,19 @@
 
 ## Consistency
 
+- [Types of consistency](concepts/consistency.md#types-of-consistency)
+  - [Weak Consistency oe Eventual Consistency](concepts/consistency.md#weak-consistency-oe-eventual-consistency)
+  - [Strong Consistency](concepts/consistency.md#strong-consistency)
+  - [Leaderless Consistency](concepts/consistency.md#leaderless-consistency)
+  - [Read your write consistency](concepts/consistency.md#read-your-write-consistency)
+  - [Monotonic reads consistency](concepts/consistency.md#monotonic-reads-consistency)
+  - [Causal consistency](concepts/consistency.md#causal-consistency)
+  - [Consistent Prefix read Consistency](concepts/consistency.md#consistent-prefix-read-consistency)
+    - [Achieved by](concepts/consistency.md#achieved-by)
+  - [More consistency (Microsoft paper on consistency)](concepts/consistency.md#more-consistency-microsoft-paper-on-consistency)
+    - [Comparisons](concepts/consistency.md#comparisons)
+    - [Grouping of consistency](concepts/consistency.md#grouping-of-consistency)
+    - [Problem and how behaviour](concepts/consistency.md#problem-and-how-behaviour)
 
 ## Core Concepts
 
