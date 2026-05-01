@@ -332,13 +332,13 @@ Why B+Tree?
 ### Comparison B-Tree vs B+-Tree
 
 | Feature           | B-Tree              | B+-Tree        |
-|------------------|--------------------|---------------|
-| Data location    | Internal + leaf    | Leaf only     |
-| Range scan       | Poor               | Excellent     |
-| Tree height      | Higher             | Lower         |
-| Disk I/O         | More               | Less          |
-| Sequential access| Weak               | Strong        |
-| DB usage         | Rare               | Standard      |
+|-------------------|---------------------|----------------|
+| Data location     | Internal + leaf     |  Leaf only     |
+| Range scan        | Poor                | Excellent      |
+| Tree height       | Higher              | Lower          |
+| Disk I/O          | More                | Less           |
+| Sequential access | Weak                | Strong         |
+| DB usage          | Rare                | Standard       |
 
 Examples:
 
@@ -552,10 +552,8 @@ As B-tree cant solve 2-D space indexing there are few indexing that helps that w
 - R-Tree
 - Quad-Tree
 
-
 - If we use the latitude index first, we'll find all restaurants in the right latitude range - but that's a long strip spanning the entire globe at that latitude! Then for each of those restaurants, we need to check if they're also in the right longitude range. Our index on longitude isn't helping because we're not doing a range scan - we're doing point lookups for each restaurant we found in the latitude range.
 - If we try to be clever and use both indexes together (via an index intersection), the database still has to merge two large sets of results - all restaurants in the right latitude range and all restaurants in the right longitude range. This creates a rectangular search area much larger than our actual circular search radius, and we still need to filter out results that are too far away.
-
 
 #### GeoHash
 
@@ -701,9 +699,9 @@ CREATE INDEX idx_user_time ON posts(user_id, created_at);
 (2, 2024-01-01)
 (2, 2024-01-02)
 (3, 2024-01-01)
-``` 
+```
 
-- B-tree to find the first entry for user_id=123, then scan sequentially through the index entries for that user until it finds entries beyond our date range. 
+- B-tree to find the first entry for user_id=123, then scan sequentially through the index entries for that user until it finds entries beyond our date range.
 - Entries are already sorted by created_at within each user_id group, we get both our filtering and sorting for free.
 
 ##### Order Index
@@ -711,8 +709,6 @@ CREATE INDEX idx_user_time ON posts(user_id, created_at);
 - Order columns from most selective to least selective.
 - Our index on (user_id, created_at) is great for queries that filter on user_id first, but it's not helpful for queries that only filter on created_at.
 - This follows from how B-trees work - we can only use the index efficiently for prefixes of our column list.
-- 
-
 
 #### Covering Index
 

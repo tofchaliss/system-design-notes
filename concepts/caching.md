@@ -5,7 +5,7 @@
 ### External caching
 
 - external cache is a standalone cache service that your application talks to over the network.
-- stores in *Redis or memcached* 
+- stores in *Redis or memcached*
 - support eviction policies like LRU and expiration via TTL so your memory footprint is small.
 
 ```mermaid
@@ -29,12 +29,12 @@ flowchart LR
 
 #### CDN: Content Delivery Network
 
-- A CDN is a geographically distributed network of servers that caches content close to users. 
+- A CDN is a geographically distributed network of servers that caches content close to users.
 - Instead of every request traveling to your origin server, a CDN stores copies of your content at edge servers around the world.
   
 ### client side caching
 
-- Client-side caching stores data close to the requester to avoid unnecessary network calls. 
+- Client-side caching stores data close to the requester to avoid unnecessary network calls.
 - means the user's device, like a browser (HTTP cache, localStorage) or mobile app using local memory or on-device storage.
 - Example: Strava App for running updating the data while offline, Redis client of metadata of the cluster node to connect directly
 
@@ -115,7 +115,7 @@ Explained under this link: [Read-Through Caching](concepts/core-concepts.md#read
 
 ### Cache Stampede
 
-- There is a brief window, even if only a second, where every request misses the cache and goes straight to the database. 
+- There is a brief window, even if only a second, where every request misses the cache and goes straight to the database.
 - Instead of one query, you suddenly have hundreds or thousands, which can overload the database.
 
 ```mermaid
@@ -279,4 +279,3 @@ mindmap
       Signal
         "We accept eventual consistency for better performance"
 ```
-

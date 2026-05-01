@@ -1,9 +1,9 @@
 # Clocks
 
-## Clocks
+## Types of Clocks
 
 ``` text
-Clocks
+Types of clocks
  ├── Physical Clocks
  │    ├── Wall Clock (UTC)
  │    ├── Real Time Clock
@@ -152,7 +152,7 @@ Client -> Smart consumer
 - Just a single counter
 - Gives order, not concurrency
 
-```mermaid 
+```mermaid
 sequenceDiagram
     participant A as Node A
     participant B as Node B
@@ -274,7 +274,7 @@ Note: *Same order across all replicas*
 
 ### Strict Ordering
 
-*Order matches real time*
+Note: *Order matches real time*
 
 If A happens before B in real time → all nodes see A before B
 

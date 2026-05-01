@@ -120,7 +120,7 @@ Features of TCP are:
 - Flow Control
 - Congestion Control
 
-#### When to choose a specific protocol:
+### When to choose a specific protocol
 
 Most of the cases it will TCP unless specificed otherwise like:
 
@@ -129,7 +129,7 @@ Most of the cases it will TCP unless specificed otherwise like:
 - Handling high-volume telemetry or logs where occasional loss is acceptable
 - If no need to support web browsers (or you have an alternative for that client)
 
-#### TCP vs UDP comparison:
+#### TCP vs UDP comparison
 
 | Feature            | UDP                     | TCP                    |
 |--------------------|-------------------------|------------------------|
@@ -187,9 +187,9 @@ HTTP headers are key-value pairs that are used to pass additional information ab
 - It uses SSL (Secure Sockets Layer) and TLS (Transport Layer Security) protocols to establish a secure connection between a client and a server.
 - It provides end-to-end encryption and authentication for data transmitted over the internet.
 
-## Communication of the services:
+## Communication of the services
 
-### REST: Representational State Transfer:
+### REST: Representational State Transfer
 
 - Consider of having action on resources and getting information from resources.
 - Resource can be anything.
@@ -230,7 +230,6 @@ What it avoids:
 - create huge aggregation APIs which are hard to maintain and slow to change
 - write brand new APIs for every new page they want to display.
 - Too many data in single call creates long time to load.
-
 
 So the GraphQL queries will be asked in the query by frontend and backend respond to the query which is applicable to frontend by backend.
 
@@ -380,7 +379,7 @@ How it works:
 
 where to use WebSockets:
 
-- High-frequency, persistent, bi-directional communication between client and server. 
+- High-frequency, persistent, bi-directional communication between client and server.
 - Think real-time applications, games, and other use-cases where you need to send and receive messages as soon as they happen.
 
 When not to use WebSockets:
@@ -388,7 +387,7 @@ When not to use WebSockets:
 - Just for real-time updates(it is an overkill).
 - If infra not supporting WebSockets.
 
-### WebRTC: Peer to peer real time communication:
+### WebRTC: Peer to peer real time communication
 
 - Uses UDP.
 - Direct use of communication between client browser with server.
@@ -415,7 +414,7 @@ Where to use WebRTC:
 - collaborative applications like document editors, especially if they need to scale to many clients.
 - Alternative CRDT (Conflict-Free Replicated Data Types) for collaborative applications.
 
-## Load Balancer:
+## Load Balancer
 
 - Load balancer is a component of a distributed system that distributes incoming requests among multiple backend servers.
 - Vertical or horizontal scaling.
@@ -423,7 +422,7 @@ Where to use WebRTC:
 
 Types of load balancing:
 
-### Client side load balancing:
+### Client side load balancing
 
 - client side load balancing is a type of load balancing that is implemented on the client side of a distributed system.
 - Client decide which server to connect to. It may be through service registry or anyother algorithm like round robin.
@@ -449,14 +448,14 @@ flowchart TD
     B --> |Yes|D[Client side load balancing]
 ```
 
-### Server side load balancing:
+### Server side load balancing
 
 - server side load balancing is a type of load balancing that is implemented on the server side of a distributed system.
 - Implementation doesnt show how many servers behind the load balancers.
 - It sits between client and server hardware nodes.
 - Additional hop before it reaches the server.
 
-#### Layer 4 network load balancing:
+#### Layer 4 network load balancing
 
 - Support TCP/UDP, routing decidion is based on IP address or port without knowing the content of the packet.
 - Maintain persistent TCP connections between client and server.
@@ -505,7 +504,6 @@ flowchart LR
 
 3.NAT Traversal with Pass through:
 
-
 ```mermaid
 flowchart LR
     C[Client] -->|TCP SYN| LB["Load Balancer (DNAT/SNAT)"]
@@ -535,7 +533,7 @@ Where to use Layer-4 load balancing:
 
 - WebSockets.
 
-#### Layer 7 load balancing:
+#### Layer 7 load balancing
 
 - Layer 7 load balancer as name suggest works in application layer (HTTP).
 - Examine the packet, they can route, forwarda to specific servers.
@@ -586,14 +584,14 @@ sequenceDiagram
     LB-->>C: HTTP response
 ```
 
-#### Health check and Fault tolerance:
+#### Health check and Fault tolerance
 
 - Health checks are a way for the load balancer to determine if a server is healthy.
 - Configured to check the server at different intervals and with different protocols.
 - Automatic failover capability makes load balancers essential for high availability.
 - Can detect and route around failures without user intervention.
 
-#### Algorithms:
+#### Algorithms
 
 - Round Robin: Requests are distributed sequentially across servers
 - Random: Requests are distributed randomly across servers
@@ -607,8 +605,7 @@ Real load balancers:
 - Software Load Balancers: HAProxy, NGINX, Envoy
 - Cloud Load Balancers: AWS ELB/ALB/NLB, Google Cloud Load Balancing, Azure Load Balancer
 
-
-### Topics to understand more:
+### Topics to understand more
 
 ```mermaid
 mindmap

@@ -150,7 +150,7 @@ Note: *All mentioned problems affect "Consistency, availability, durability, lat
 #### Statement based replication
 
 - Each statement on the database (leader) is replicated to each node (follower)
-- BreakDown on 
+- BreakDown on
   - RAND(), NOW() make sense on the leader not on the follower while replicating using statement
   - AUto incrementing primary key make sense on the leader not on the follower while replicating using statement
 
@@ -319,6 +319,7 @@ flowchart LR
   - If the leader fails, the write is not guaranteed to be successful.
 
 ## Summary
+
 ```mermaid
 mindmap
   root((Replication))

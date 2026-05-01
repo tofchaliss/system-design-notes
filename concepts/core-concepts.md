@@ -213,13 +213,12 @@ flowchart LR
     DB --> |Read Reply/Write Successful| Cache 
 ```
 
-
 Write steps:
 
 1. The application writes directly to the cache.
 2. After a successful write, the application should either invalidate the cache entry or update it to avoid stale reads.
-3. Dual-write problem. 
-   1. If the cache update succeeds but the database write fails, or vice versa, the systems can end up inconsistent. 
+3. Dual-write problem.
+   1. If the cache update succeeds but the database write fails, or vice versa, the systems can end up inconsistent.
    2. You need retry logic, error handling, or eventually accept that perfect consistency is difficult without distributed transactions.
 
 Pros: writes are efficient and centralized in the cache; the cache can control load on the backing store.
@@ -248,7 +247,6 @@ Write steps:
 1. The application writes directly to the cache.
 2. After a successful write, the application should either invalidate the cache entry or update it to avoid stale reads.
 3. The write will be in bulk which is not acknoledged to the client
-
 
 Pros: writes are efficient and centralized in the cache; the cache can control load on the backing store.
 Cons: reads bypass the cache, so the system must ensure cache invalidation or update logic to prevent stale data.

@@ -54,7 +54,7 @@ flowchart LR
 - Even Distribution: The key should have a distribution that is even. For example, the user_id column in the users table has a distribution that is even because it has many unique values.
 - Align with queries: Query should hit only one shard. For example, the user_id column in the users table is aligned with queries that are made to retrieve user data.
   
-For example: 
+For example:
 
 - user_id column in the users table is aligned with queries that are made to retrieve user data
 - order_id column in the orders table is aligned with queries that are made to retrieve order data
@@ -87,7 +87,7 @@ Where it is used:
 
 - take a shard key like user_id, hash it, and use the result to pick a shard.
 - hash-based sharding is even distribution.
-- downside shows up when you need to add or remove shards. 
+- downside shows up when you need to add or remove shards.
   - If you go from 4 shards to 5, the modulo operation changes from % 4 to % 5, which means almost every record maps to a different shard. You have to move massive amounts of data around.
   - Use consistent-hashing instead.
 
@@ -103,7 +103,7 @@ User 123 → hash(123) % 4 = Shard 1
 
 - Kind of lookup table
 
-```
+```text
 user_to_shard
 ---------------
 User 15   → Shard 1
@@ -114,7 +114,7 @@ User 204  → Shard 2
 Good:
 
 - If a particular user generates tons of traffic, you can move them to a dedicated shard.
-- If you need to rebalance load, you just update the mapping table. 
+- If you need to rebalance load, you just update the mapping table.
 - You can implement complex sharding logic that would be impossible with a simple hash function.
   
 Not good:
@@ -124,13 +124,13 @@ Not good:
 - Also, it requires a directory service to keep track of the shard assignments.
 - If the directory goes down, your entire system stops working even if all the data shards are healthy.
 
-## Challenge:
+## Challenge
 
 - Uneven shards
 - Hot-spots
 - consistency maintenance
 
-### Hot spot 
+### Hot spot
 
 #### Celebrity problem
 
@@ -138,14 +138,14 @@ Not good:
 - Problem is not strategies it is key is inherently user is more active than other user.
 - It can be tackled using *directory based sharding* with celebrities in one dedicated shard.
 
-#### How to detect hotspot:
+#### How to detect hotspot
 
-- query latency, CPU usage, and request volume. 
+- query latency, CPU usage, and request volume.
 - When one shard consistently shows higher metrics than others, you have a hot spot problem.
 
-#### How to handle hot spot:
+#### How to handle hot spot
 
-- Isolate hot keys to dedicated shards: 
+- Isolate hot keys to dedicated shards:
 - Use compound shard keys
   - spreads a single user's data across multiple shards over time, which helps if the hot spot is both high volume and spans time periods.
   - Use multiple shard keys: user_id + created_at
@@ -161,12 +161,12 @@ Not good:
 ### How to avoid cross-shard operations
 
 - Cache the results
-- If "top 10 most popular posts" requires hitting all shards, cache the result for 5 minutes. 
+- If "top 10 most popular posts" requires hitting all shards, cache the result for 5 minutes.
   - The first query is expensive, but the next thousand requests hit the cache instead of querying 64 shards.
 - Denormalize to keep related data together
   - frequently need to query posts along with user data, store some post information directly on the user's shard.
   - Update will be complex but worth it by keeping everything in one shard.
-- Accept the hit for rare queries: 
+- Accept the hit for rare queries
 
 Maintaing consistency
 
@@ -181,8 +181,8 @@ Design to avoid cross-shard transactions:
 Use sagas for multi-shard operations:
 
 - When you absolutely need to coordinate across shards, use the saga pattern.
-  - Break the operation into a sequence of independent steps, each with a compensating action. 
-    - If step 3 fails, you run compensating actions for steps 2 and 1 to undo the work. 
+  - Break the operation into a sequence of independent steps, each with a compensating action.
+    - If step 3 fails, you run compensating actions for steps 2 and 1 to undo the work.
     - For example, transferring money between users on different shards:
       - Deduct money from User A's account (shard 1)
       - Add money to User B's account (shard 2)
@@ -239,4 +239,3 @@ flowchart TD
 
     M --> N[End]
 ```
-

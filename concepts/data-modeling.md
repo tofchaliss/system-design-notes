@@ -28,7 +28,6 @@
 | 2  | 1       | 2       | 2024-01-01 10:05:00 |
 | 3  | 2       | 3       | 2024-01-01 10:10:00 |
 
-
 ```mermaid
 erDiagram
 
@@ -169,12 +168,12 @@ flowchart TD
     CF3 --> FLEX
 ```
 
-#### When to to consider over SQL:
+#### When to to consider over SQL
 
 - When you have enormous write volumes, time-series data, or analytics workloads where you primarily append data and run aggregations.
   - Think telemetry, event logging, or IoT sensor data.
 
-#### Data modeling impact
+#### Data modeling impacts
 
 - Time becomes a first-class citizen in your modeling.
 - design around query patterns even more than with SQL, often duplicating data across different column families to support various access patterns.
@@ -247,7 +246,7 @@ Connect with entities:
 
 - Indexes are data structures that help the database find records quickly without scanning every row.
 
-### Normalizing and denormalizing 
+### Normalizing and denormalizing
 
 ```mermaid normalized
 flowchart LR
@@ -276,6 +275,7 @@ flowchart TD
 - Avoid cross-shard transactions
 
 ## Mindmap for Schema design
+
 ```mermaid
 mindmap
   root((Schema Design Thinking))
@@ -386,5 +386,3 @@ mindmap
       Introduce sharding when needed
       Explain trade-offs clearly
 ```
-
-
