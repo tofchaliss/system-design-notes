@@ -441,10 +441,271 @@ Transaction acquires ALL required locks before starting
 
 ### Flow Graph based Locking (FGL)
 
+- Tree based locking which is generalized to get Graph based locking (FGL)
+  - Database
+
+├── Table
+│    ├── Page
+│    │    ├── Row
+
+or 
+
+ A
+├── B
+│   ├── D
+│   └── E
+└── C
+
+Rules:
+
+- First lock can be any node
+- To lock a node, Transaction must already hold lock on parent node
+- Unlocking allowed anytime
+- Cannot relock a node that node again
+
+```mermaid
+flowchart TD
+    A[A]
+    B[B]
+    C[C]
+    D[D]
+    E[E]
+
+    A --> B
+    A --> C
+    B --> D
+    B --> E
+```
+
+This use case is valid
+
+Lock(A)
+Lock(B)
+Lock(D)
+Unlock(D)
+Lock(E)
+
+but this is not valid
+
+Lock(D) because parent B node is not locked
+
+*Note:* Since Tree based is hierarchical,   Top → Bottom it can avoid deadlocks
+
+Graph based locking:
+
+This uses dependency/precedence graphs.  Transactions represented as nodes.  Conflicts represented as edges.
+
+```mermaid
+flowchart LR
+
+    T1((T1)) --> T2((T2))
+    T2((T2)) --> T3((T3))
+```
+
+This works
+
+```mermaid
+flowchart LR
+
+    T1((T1)) --> T2((T2))
+    T2((T2)) --> T1((T1))
+```
+
+This wont work
+
+Before allowing operation check below:
+    System checks whether dependency graph
+    would become cyclic
+
+if cyclic then abort
+If not cyclic, then proceed
+
 ### Timestamp based Locking (TBL)
 
+```mermaid
+sequenceDiagram
+    participant T1 as Older Transaction
+    participant T2 as Newer Transaction
+    participant DB
+
+    T1->>DB: Read(A)
+
+    T2->>DB: Request Write(A)
+
+    Note over DB: Conflict detected
+
+    DB-->>T2: Wait / Abort
+
+    T1->>DB: Commit
+```
+
+Avoid:
+
+deadlocks
+cyclic waiting
+
+by enforcing temporal ordering.
+
+| Algorithm  | Rule                        |
+| ---------- | --------------------------- |
+| Wait-Die   | Older waits, younger aborts |
+| Wound-Wait | Older preempts younger      |
+
+| Feature           | Time-Based Locking | Flow Graph Locking          |
+| ----------------- | ------------------ | --------------------------- |
+| Main Idea         | Time ordering      | Dependency graph            |
+| Uses              | Timestamps         | Serialization graph         |
+| Deadlock          | Prevented          | Avoided via cycle detection |
+| Serializable      | Yes                | Yes                         |
+| Complexity        | Medium             | Higher                      |
+| Conflict Handling | Timestamp rules    | Graph analysis              |
+
+
 ### MVCC (Multi Version Concurrency Control)
+```mermaid
+sequenceDiagram
+    participant T1
+    participant DB
+    participant T2
+
+    T1->>DB: Update Row A
+
+    Note over DB: Old Version Retained
+
+    T2->>DB: Read Row A
+    DB-->>T2: Return Older Snapshot ✅
+
+    T1->>DB: Commit
+```
+
+Internal of MVCC
+
+| Field   | Meaning                              |
+| ------- | ------------------------------------ |
+| xmin    | Transaction that created row         |
+| xmax    | Transaction that deleted/updated row |
+| version | Row version                          |
+
+Example
+
+| Version | Value       | Created By | Deleted By |
+| ------- | ----------- | ---------- | ---------- |
+| V1      | Salary=5000 | T1         | T2         |
+| V2      | Salary=7000 | T2         | NULL       |
+
+```mermaid
+sequenceDiagram
+    participant T1
+    participant T2
+    participant DB
+
+    T1->>DB: Start Transaction
+
+    T2->>DB: Update Balance = 2000
+    T2->>DB: Commit
+
+    T1->>DB: Read Balance
+    DB-->>T1: 1000 ✅ Snapshot Value
+```
+
+Even though T2 committed:
+
+T1 still sees older snapshot.
+
+| Problem                | Prevented?                 |
+| ---------------------- | -------------------------- |
+| Dirty Reads            | ✅ Yes                      |
+| Read Locks             | Mostly avoided             |
+| Reader-Writer Blocking | ✅ Yes                      |
+| Non-Repeatable Reads   | ✅ Under snapshot isolation |
+| Some Phantom Reads     | ✅ Often                    |
+
 
 ### Serialzable snapshot isolation
 
 - Optimized Concurrency Control + MVCC
+
+Performance close to Snapshot Isolation
++
+Correctness close to Serializable isolation
+
+Normal MVCC allows write skew anomaly:
+
+dirty reads
+non-repeatable reads
+
+BUT it still allows anomalies like:
+
+Write Skew
+
+which breaks true serializability.  SSI fixes this.
+
+*Note:* Core idea of SSI is to Detect dangerous serialization patterns dynamically
+
+```mermaid
+flowchart TD
+
+    A[MVCC Snapshot Read]
+
+    B[Track Read-Write Dependencies]
+
+    C{Serialization Cycle Possible?}
+
+    C -- No --> D[Commit Transaction]
+
+    C -- Yes --> E[Abort & Retry]
+
+    A --> B --> C
+```
+
+#### How PostgreSQL Implements SSI
+
+PostgreSQL uses:
+
+Serializable Snapshot Isolation
+
+instead of traditional lock-heavy serializable isolation.
+
+Internally PostgreSQL:
+
+- tracks rw-dependencies
+- uses predicate locks
+- monitors dangerous structures
+- aborts conflicting transactions.
+
+```mermaid
+sequenceDiagram
+    participant T1
+    participant T2
+    participant DB
+
+    T1->>DB: Query balance > 1000
+
+    T2->>DB: Insert row balance=2000
+
+    Note over DB: Predicate dependency tracked
+
+    T2->>DB: Commit
+
+    T1->>DB: Commit Attempt
+
+    DB-->>T1: Abort due to serialization conflict
+```
+
+This is how it works:
+
+```mermaid
+flowchart TD
+
+    A[MVCC Snapshot Read]
+
+    B[Track Read-Write Dependencies]
+
+    C{Serialization Cycle Possible?}
+
+    C -- No --> D[Commit Transaction]
+
+    C -- Yes --> E[Abort & Retry]
+
+    A --> B --> C
+```
