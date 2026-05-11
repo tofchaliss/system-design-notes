@@ -246,3 +246,4 @@
   - [Timestamp based Locking (TBL)](concepts/transaction_concurrency.md#timestamp-based-locking-tbl)
   - [MVCC (Multi Version Concurrency Control)](concepts/transaction_concurrency.md#mvcc-multi-version-concurrency-control)
   - [Serialzable snapshot isolation](concepts/transaction_concurrency.md#serialzable-snapshot-isolation)
+    - [How PostgreSQL Implements SSI](concepts/transaction_concurrency.md#how-postgresql-implements-ssi)
