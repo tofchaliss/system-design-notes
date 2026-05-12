@@ -709,3 +709,39 @@ flowchart TD
 
     A --> B --> C
 ```
+
+```mermaid
+*Atomicity Consistency Isolation Durability*
+
+ACID
+│
+├── Atomicity
+│     ├── rollback
+│     ├── WAL
+│     ├── crash recovery
+│     ├── undo/redo logs
+│     └── 2PC
+│
+├── Consistency
+│     ├── constraints
+│     ├── invariants
+│     ├── referential integrity
+│     ├── valid state transitions
+│     └── business rules
+│
+├── Isolation
+│     ├── dirty reads
+│     ├── MVCC
+│     ├── locking
+│     ├── serializability
+│     ├── deadlocks
+│     └── concurrency control
+│
+└── Durability
+      ├── WAL persistence
+      ├── replication
+      ├── quorum writes
+      ├── backups
+      ├── fsync
+      └── crash survival
+```
