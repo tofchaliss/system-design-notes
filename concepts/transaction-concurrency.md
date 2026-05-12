@@ -20,7 +20,7 @@ stateDiagram-v2
 
 ## Concurrency
 
-### Lost update problem (Write - write conflict):
+### Lost update problem (Write - write conflict)
 
 ```mermaid
 sequenceDiagram
@@ -56,7 +56,7 @@ The problem occurs because:
 - One transaction overwrites the other's update.
 - No concurrency control mechanism prevents the overwrite.
 
-#### Solution using pessimistic locking:
+#### Solution using pessimistic locking
 
 ```mermaid
 sequenceDiagram
@@ -83,7 +83,7 @@ sequenceDiagram
     Note over DB: Final Balance = 1100 ✅
 ```
 
-#### Solution using optimistic locking + Version control:
+#### Solution using optimistic locking + Version control
 
 ```mermaid
 flowchart TD
@@ -98,7 +98,7 @@ flowchart TD
     A --> B --> C --> D
 ```
 
-### Dirty read problem (Write - read conflict):
+### Dirty read problem (Write - read conflict)
 
 ```mermaid
 sequenceDiagram
@@ -146,7 +146,7 @@ sequenceDiagram
     Note over T2: Dirty Read Prevented ✅
 ```
 
-### Non-repeatable read problem (Read - write conflict):
+### Non-repeatable read problem (Read - write conflict)
 
 ```mermaid
 sequenceDiagram
@@ -198,7 +198,7 @@ sequenceDiagram
     Note over T1: Repeatable Read Maintained ✅
 ```
 
-### Phantom read problem (Read - read conflict):
+### Phantom read problem (Read - read conflict)
 
 ```mermaid
 sequenceDiagram
@@ -224,6 +224,7 @@ sequenceDiagram
 ```
 
 Solution for phantom read:
+
 ```mermaid
 sequenceDiagram
     participant T1 as Transaction 1
@@ -253,7 +254,7 @@ sequenceDiagram
 - Change value of thomas age: Age will be diffferent in two read. (Non-repeatable read)
 - Query giving more rows than expected Earlier it was thomas but in second query it will be more rows (Tjhomas and sam).(Phantom read)
 
-### Incorrect summary problem:
+### Incorrect summary problem
 
 ```mermaid
 sequenceDiagram
@@ -304,16 +305,16 @@ sequenceDiagram
     Note over T1: Correct Summary Maintained ✅
 ```
 
-#### Comparision between types of isolations:
+#### Comparision between types of isolations
 
-| Isolation Level  | Dirty Read   | Non-Repeatable Read   | Phantom Read |
-| ---------------- | -----------  | -------------------   | ------------ |
-| Read Uncommitted | ✅ Possible  | ✅ Possible           | ✅ Possible   |
-| Read Committed   | ❌ Prevented | ✅ Possible          | ✅ Possible   |
-| Repeatable Read  | ❌ Prevented | ❌ Prevented         | ✅ Possible*  |
-| Serializable     | ❌ Prevented | ❌ Prevented         | ❌ Prevented  |
+| Isolation Level  | Dirty Read   | Non-Repeatable Read| Phantom Read |
+| ---------------- | -----------  | -------------------| ------------ |
+| Read Uncommitted | ✅ Possible  | ✅ Possible        | ✅ Possible  |
+| Read Committed   | ❌ Prevented | ✅ Possible        | ✅ Possible  |
+| Repeatable Read  | ❌ Prevented | ❌ Prevented       | ✅ Possible* |
+| Serializable     | ❌ Prevented | ❌ Prevented       | ❌ Prevented |
 
-## Serialization:
+## Serialization
 
 ```mermaid
 flowchart TD
@@ -372,10 +373,10 @@ Issues:
 
 | Protocol         | Conflict Serializable | Cascading Rollback Possible | Deadlock Possible | Recoverable   | Strict     |
 | ---------------- | --------------------- | --------------------------- | ----------------- | ------------- | ---------- |
-| Basic 2PL        | ✅ Yes                 | ✅ Yes                       | ✅ Yes             | ⚠️ Not Always | ❌ No       |
-| Strict 2PL       | ✅ Yes                 | ❌ No                        | ✅ Yes             | ✅ Yes         | ✅ Yes      |
-| Rigorous 2PL     | ✅ Yes                 | ❌ No                        | ✅ Yes             | ✅ Yes         | ✅ Stronger |
-| Conservative 2PL | ✅ Yes                 | Depends                     | ❌ No              | Depends       | Depends    |
+| Basic 2PL        | ✅ Yes                | ✅ Yes                      | ✅ Yes            | ⚠️ Not Always | ❌ No      |
+| Strict 2PL       | ✅ Yes                | ❌ No                       | ✅ Yes            | ✅ Yes        | ✅ Yes     |
+| Rigorous 2PL     | ✅ Yes                | ❌ No                       | ✅ Yes            | ✅ Yes        | ✅ Stronger|
+| Conservative 2PL | ✅ Yes                | Depends                     | ❌ No             | Depends       | Depends    |
 
 ### 2 Phase Locking
 
@@ -385,8 +386,8 @@ Growing Phase:
 Shrinking Phase:
     Only release locks
 
-| Property          | Status     |
-| ----------------- | ---------- |
+| Property          | Status      |
+| ----------------- | ------------|
 | Serializable      | ✅ Yes      |
 | Cascading Failure | ✅ Possible |
 | Deadlock          | ✅ Possible |
@@ -400,22 +401,22 @@ T1 aborts
 #### Strict 2 Phase Locking
 
 All WRITE locks held until COMMIT/ABORT
-| Property          | Status      |
-| ----------------- | ----------- |
+
+| Property          | Status       |
+| ----------------- | -------------|
 | Serializable      | ✅ Yes       |
 | Cascading Failure | ❌ Prevented |
 | Deadlock          | ✅ Possible  |
 
-#### Rigourous 2 Phase Locking:
+#### Rigourous 2 Phase Locking
 
 ALL locks (Read + Write)
 held until COMMIT
 
 | Feature                      | Strict 2PL | Rigorous 2PL |
 | ---------------------------- | ---------- | ------------ |
-| Write locks held till commit | ✅          | ✅            |
-| Read locks held till commit  | ❌          | ✅            |
-
+| Write locks held till commit | ✅         | ✅           |
+| Read locks held till commit  | ❌         | ✅           |
 
 #### Conservative 2 Phase Locking
 
@@ -423,14 +424,14 @@ Transaction acquires ALL required locks before starting
 
 | Property     | Status      |
 | ------------ | ----------- |
-| Serializable | ✅ Yes       |
-| Deadlock     | ❌ Prevented |
+| Serializable | ✅ Yes      |
+| Deadlock     | ❌ Prevented|
 
 - Why No Deadlock?
   - Because transaction never holds partial resources while waiting.
   - No circular wait condition.
 
-#### Use cases:
+#### Use cases
 
 | Database Style               | Common Protocol  |
 | ---------------------------- | ---------------- |
@@ -447,8 +448,6 @@ Transaction acquires ALL required locks before starting
 ├── Table
 │    ├── Page
 │    │    ├── Row
-
-or 
 
  A
 ├── B
@@ -560,8 +559,8 @@ by enforcing temporal ordering.
 | Complexity        | Medium             | Higher                      |
 | Conflict Handling | Timestamp rules    | Graph analysis              |
 
-
 ### MVCC (Multi Version Concurrency Control)
+
 ```mermaid
 sequenceDiagram
     participant T1
@@ -614,12 +613,11 @@ T1 still sees older snapshot.
 
 | Problem                | Prevented?                 |
 | ---------------------- | -------------------------- |
-| Dirty Reads            | ✅ Yes                      |
+| Dirty Reads            | ✅ Yes                     |
 | Read Locks             | Mostly avoided             |
-| Reader-Writer Blocking | ✅ Yes                      |
-| Non-Repeatable Reads   | ✅ Under snapshot isolation |
-| Some Phantom Reads     | ✅ Often                    |
-
+| Reader-Writer Blocking | ✅ Yes                     |
+| Non-Repeatable Reads   | ✅ Under snapshot isolation|
+| Some Phantom Reads     | ✅ Often                   |
 
 ### Serialzable snapshot isolation
 
