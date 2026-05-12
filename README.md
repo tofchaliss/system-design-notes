@@ -25,6 +25,9 @@
     - [Hot Keys](concepts/caching.md#hot-keys)
 - [Summary](concepts/caching.md#summary)
 
+## Cap
+
+
 ## Clocks
 
 - [Types of Clocks](concepts/clocks.md#types-of-clocks)
