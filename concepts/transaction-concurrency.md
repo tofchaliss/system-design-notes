@@ -710,7 +710,9 @@ flowchart TD
     A --> B --> C
 ```
 
-```mermaid
+## Conclusion
+
+```text
 *Atomicity Consistency Isolation Durability*
 
 ACID
