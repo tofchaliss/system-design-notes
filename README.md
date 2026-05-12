@@ -247,3 +247,4 @@
   - [MVCC (Multi Version Concurrency Control)](concepts/transaction-concurrency.md#mvcc-multi-version-concurrency-control)
   - [Serialzable snapshot isolation](concepts/transaction-concurrency.md#serialzable-snapshot-isolation)
     - [How PostgreSQL Implements SSI](concepts/transaction-concurrency.md#how-postgresql-implements-ssi)
+- [Conclusion](concepts/transaction-concurrency.md#conclusion)
