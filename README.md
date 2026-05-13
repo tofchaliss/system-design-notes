@@ -27,6 +27,11 @@
 
 ## Cap
 
+- [Explanantions](concepts/cap.md#explanantions)
+  - [Example](concepts/cap.md#example)
+  - [Choosing Availability Versus Consistency](concepts/cap.md#choosing-availability-versus-consistency)
+  - [Consistency Levels](concepts/cap.md#consistency-levels)
+- [Summary](concepts/cap.md#summary)
 
 ## Clocks
 
