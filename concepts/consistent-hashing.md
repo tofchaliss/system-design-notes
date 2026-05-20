@@ -107,7 +107,82 @@ And so on...
 - Key-space salting: Append a random suffix to hot keys (e.g., mj-{0..9}) so they hash to different nodes. Reads then scatter across those nodes and get aggregated.
 - Adaptive rebalancing: Monitor traffic in real-time and move specific key ranges off overloaded nodes. This is operationally complex but some systems (like DynamoDB) do it automatically.
 
+### Real World and Practices
 
+- Consistent hashing tells you where data should live, but it doesn't magically teleport terabytes of data when a node goes down. In practice, most distributed databases use replication alongside consistent hashing to handle failures without moving data at all.
+  - For example, DynamoDB replicates each partition across three availability zones. When a primary node fails, a replica is promoted via a consensus algorithm like Raft, and no data needs to move. Cassandra works similarly, replicating data to N consecutive nodes on the ring so reads can be served from surviving replicas.
+- Data movement really only happens during planned membership changes like adding capacity or permanently replacing a node to restore the replication factor. Even then, consistent hashing ensures only a bounded fraction of keys need to be re-replicated, not the entire dataset.
+
+- Apache Cassandra: Uses consistent hashing to distribute data across the ring
+- Amazon's DynamoDB: Uses consistent hashing under the hood for partition placement
+- Content Delivery Networks (CDNs): Use consistent hashing to determine which edge server should cache specific content
+
+#### In the infrastructure interviews
+
+Design a distributed database
+Design a distributed cache
+Design a distributed message broker
+
+### Deep Dives
+```mermaid
+mindmap
+  root((Consistent Hashing))
+
+    Why Better Than Modulo Sharding
+      Minimal Data Movement
+        Only nearby keys remap
+        Scaling becomes easier
+      Better Elasticity
+        Easy node addition/removal
+      Reduced Rebalancing Cost
+        No full redistribution
+      Suitable For Distributed Systems
+        Cassandra
+        DynamoDB
+        Redis Cluster
+        Kafka Partitioning
+
+    Virtual Nodes (VNodes)
+      Improve Load Distribution
+      One Physical Node Owns Multiple Hash Ranges
+      Prevent Uneven Partitions
+      Better Resource Utilization
+      Easier Cluster Expansion
+      Failure Impact Reduced
+
+    Node Failures And Additions
+      Node Addition
+        Only adjacent ranges migrate
+        Minimal cluster impact
+      Node Failure
+        Neighbor takes ownership
+        Replicas become active
+      Automatic Rebalancing
+      Gossip / Membership Protocols
+      Health Checks
+
+    Hot Spots
+      Causes
+        Skewed Key Distribution
+        Popular Keys
+        Uneven Traffic
+      Mitigation Techniques
+        Replication
+        Key Salting
+        Randomized Partitioning
+        Load-Aware Routing
+        Caching Layer
+        Rate Limiting
+
+    Replication And Fault Tolerance
+      Replicate To Multiple Nodes
+      Successor Replication
+      Quorum Reads/Writes
+      High Availability
+      Data Durability
+      Failover Support
+      Eventual Consistency
+```
 
 
 
