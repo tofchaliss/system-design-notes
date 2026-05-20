@@ -74,6 +74,14 @@
     - [Grouping of consistency](concepts/consistency.md#grouping-of-consistency)
     - [Problem and how behaviour](concepts/consistency.md#problem-and-how-behaviour)
 
+## Consistent Hashing
+
+- [Basic Hashing](concepts/consistent-hashing.md#basic-hashing)
+  - [Consistent Hashing as a Solution](concepts/consistent-hashing.md#consistent-hashing-as-a-solution)
+  - [Removing a Database](concepts/consistent-hashing.md#removing-a-database)
+  - [Virtual Nodes](concepts/consistent-hashing.md#virtual-nodes)
+    - [Hot Spots](concepts/consistent-hashing.md#hot-spots)
+
 ## Core Concepts
 
 - [Reliability](concepts/core-concepts.md#reliability)
