@@ -81,6 +81,9 @@
   - [Removing a Database](concepts/consistent-hashing.md#removing-a-database)
   - [Virtual Nodes](concepts/consistent-hashing.md#virtual-nodes)
     - [Hot Spots](concepts/consistent-hashing.md#hot-spots)
+  - [Real World and Practices](concepts/consistent-hashing.md#real-world-and-practices)
+    - [In the infrastructure interviews](concepts/consistent-hashing.md#in-the-infrastructure-interviews)
+  - [Deep Dives](concepts/consistent-hashing.md#deep-dives)
 
 ## Core Concepts
 
